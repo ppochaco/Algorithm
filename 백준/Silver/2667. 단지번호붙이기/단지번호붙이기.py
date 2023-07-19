@@ -8,7 +8,6 @@ graph = [[0]*0 for _ in range(n)]
 visited = [[False]*n for _ in range(n)]
 direction = [[1,0], [0,1], [-1,0], [0,-1]]
 queue = []
-cnt = 0
 block = []
 
 def bfs(i, j):
@@ -28,7 +27,7 @@ def bfs(i, j):
             if(cur_j < 0 or cur_j >= n):
                 continue
 
-            if graph[cur_i][cur_j] == 1 and visited[cur_i][cur_j] == False:
+            if graph[cur_i][cur_j] == 1 and not visited[cur_i][cur_j]:
                 home += 1
                 queue.append((cur_i, cur_j))
                 visited[cur_i][cur_j] = True
@@ -42,10 +41,9 @@ for i in range(n):
 
 for i in range(n):
     for j in range(n):
-        if graph[i][j] == 1 and visited[i][j] == False:
-            cnt += 1
+        if graph[i][j] == 1 and not visited[i][j]:
             bfs(i,j)
 
-print(cnt)
+print(len(block))
 block.sort()
 print(*block, sep='\n')
