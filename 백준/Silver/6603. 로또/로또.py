@@ -1,18 +1,11 @@
-import sys
-import itertools
+import sys, itertools
 input = sys.stdin.readline
 
-while True:      
-    line = input().split()
-    n = int(line[0])
+while True:
+    line = list(map(int, input().split()))
+    n = line[0]
     if n == 0:
         break
-
-    num = [int(line[i]) for i in range(1,n+1)]
-    num.sort()
-    
-    combination = list(itertools.combinations(num, 6))
-    for i in range(len(combination)):
-        print(*combination[i])
+    for i in itertools.combinations(line[1:], 6):
+        print(* i)
     print()
-    
