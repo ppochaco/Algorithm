@@ -1,54 +1,28 @@
 import sys
 input = sys.stdin.readline
-sys.setrecursionlimit(10*6)
+
+from collections import deque
 
 r, c = map(int, input().split())
 graph = [list(input().rstrip()) for _ in range(r)]
-direction = [[1, 0], [0, -1], [-1, 0], [0, 1]]
+queue = deque([(0,0,graph[0][0])])
+dx = [0, 1, -1, 0]
+dy = [1, 0, 0, -1]
 answer = 0
 
-alphabet = [0] * 26
+while queue:
+    x, y, s = queue.pop()
+    answer = max(answer, len(s))
 
-for i in range(r):
-    for j in range(c):
-        alphabet[ord(graph[i][j])-ord('A')] += 1
+    for i in range(4):
+        cur_x = x + dx[i]
+        cur_y = y + dy[i]
 
-maxalpha = 0
-for i in range(26):
-    if alphabet[i] > 0:
-        maxalpha += 1
-
-for i in range(26):
-    alphabet[i] = 0
-
-def move_horse(i, j, depth):
-    global answer
-
-    if answer  == maxalpha:
-        return
-
-    answer = max(depth, answer)
-    ch = ord(graph[i][j]) - ord('A')
-    alphabet[ch] = 1
-
-    for k in range(4):
-        cur_i = i + direction[k][0]
-        cur_j = j + direction[k][1]
-
-        if cur_i < 0 or cur_i >= r:
+        if cur_x < 0 or cur_x >= r:
             continue
-        if cur_j < 0 or cur_j >= c:
-            continue
-        
-        ch = ord(graph[cur_i][cur_j]) - ord('A')
-        if alphabet[ch]:
+        if cur_y < 0 or cur_y >= c:
             continue
 
-        alphabet[ch] = 1
-        move_horse(cur_i, cur_j, depth + 1)
-        alphabet[ch] = 0
-
-
-move_horse(0, 0, 1)
-        
+        if graph[cur_x][cur_y] not in s:
+            queue.append((cur_x, cur_y, s + graph[cur_x][cur_y]))
 print(answer)
