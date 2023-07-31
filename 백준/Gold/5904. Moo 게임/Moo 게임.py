@@ -5,12 +5,7 @@ n = int(input())
 
 def moo(i, l, n):
     pre_l = (l - (i+3)) // 2
-    if i == 0:
-        if n == 1:
-            return 'm'
-        else:
-            return 'o'
-
+    
     if n <= pre_l:
         return moo(i-1, pre_l, n)
     elif n > pre_l + (i+3):
@@ -21,9 +16,9 @@ def moo(i, l, n):
         else:
             return 'o'
 i = 0
-k = 0
+k = 3
 while n > k:
-    k = 2*k + (i+3)
     i += 1
+    k = 2*k + (i+3)
 
-print(moo(i-1,k,n))
+print(moo(i,k,n))
