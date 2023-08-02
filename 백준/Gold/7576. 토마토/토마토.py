@@ -20,7 +20,6 @@ def bfs():
                 graph[nx][ny] = graph[x][y] + 1
                 queue.append((nx,ny))
 
-
 for i in range(n):
     for j in range(m):
         if graph[i][j] == 1:
@@ -28,15 +27,9 @@ for i in range(n):
 bfs()
 
 answer = 0
-check = False
-for i in range(n):
-    for j in range(m):
-        if graph[i][j] == 0:
-            answer = 0
-            check = True
-            break
-        answer = max(graph[i][j], answer)
-    if check:
+for i in graph:
+    if 0 in i:
+        answer = 0
         break
-
+    answer = max(max(i), answer)
 print(answer - 1)
