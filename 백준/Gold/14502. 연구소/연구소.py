@@ -1,4 +1,4 @@
-import sys, itertools, copy
+import sys, copy
 input = sys.stdin.readline
 from collections import deque
 from itertools import combinations
@@ -11,25 +11,25 @@ dy = [0, 1, 0, -1]
 answer = 0
 
 def make_walls():
+    global answer
     three_walls = list(combinations(blank_index,3))
-
     for wall in three_walls:
         virus_graph = copy.deepcopy(graph)
         for i in range(3):
             x, y = wall[i]
             virus_graph[x][y] = 1
         spread_virus(virus_graph)
-
+        blank_cnt = 0
+        for line in virus_graph:
+            blank_cnt += line.count(0)
+        answer = max(blank_cnt, answer)
 
 def spread_virus(graph):
-    global answer
-    
     queue = deque([])
     for i in range(n):
         for j in range(m):
             if graph[i][j] == 2:
                 queue.append((i,j))
-    
     while queue:
         x, y = queue.popleft()
         for i in range(4):
@@ -37,13 +37,6 @@ def spread_virus(graph):
             if 0<=nx<n and 0<=ny<m and graph[nx][ny] == 0:
                 graph[nx][ny] = 2
                 queue.append((nx,ny))
-    
-    blank_cnt = 0
-    for i in range(n):
-        for j in range(m):
-            if graph[i][j] == 0:
-                blank_cnt += 1
-    answer = max(blank_cnt, answer)
 
 for i in range(n):
     for j in range(m):
