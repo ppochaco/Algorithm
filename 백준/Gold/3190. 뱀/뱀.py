@@ -2,40 +2,33 @@ import sys
 input = sys.stdin.readline
 
 n = int(input())
-k = int(input()) # 사과 개수
+k = int(input())
 board = [[0]* (n+1) for _ in range(n+1)]
 
-for _ in range(k):
+for _ in range(k): # 사과 위치 저장
     x, y = map(int, input().split())
     board[x][y] = 2
 
-l = int(input()) # 방향 변환 횟수
-time = []
-direction = []
-
-for _ in range(l):
+l = int(input())
+direction = {}
+for _ in range(l): # 방향 변환 정보 저장
     x, c = input().split()
-    time.append(x)
-    direction.append(c)
+    direction[int(x)] = c
 
+# 초기값 세팅
 x, y = 1, 1
 board[x][y] = 1
 dx, dy = 0, 1
-next_time = int(time.pop(0))
-next_d = direction.pop(0)
 cur_time = 0
 snake = [(x,y)]
 
 while True:
     # 시간되면 방향 바꾸기
-    if cur_time == next_time:
-        if next_d == 'L':
+    if cur_time in direction:
+        if direction[cur_time] == 'L':
             dx, dy = -1 * dy, dx
         else:
             dx, dy = dy, -1 * dx
-        if len(time) != 0:
-            next_time = int(time.pop(0))
-            next_d = direction.pop(0)
 
     # 한 칸씩 이동하기
     nx, ny = x + dx, y + dy
@@ -47,7 +40,8 @@ while True:
     if board[nx][ny] == 1:
         break
 
-    if board[nx][ny] != 2: # 사과 없으면 꼬리 이동
+    # 사과 없으면 꼬리 이동
+    if board[nx][ny] != 2:
         px, py = snake.pop(0)
         board[px][py] = 0
         
