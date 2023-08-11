@@ -1,5 +1,6 @@
 import sys
 input = sys.stdin.readline
+from math import ceil
 
 n = int(input())
 test = list(map(int, input().split()))
@@ -10,8 +11,6 @@ for i in range(n):
     test[i] -= b
     cnt += 1
     if(test[i] > 0):
-        cnt += test[i] // c
-        if test[i] % c != 0:
-            cnt += 1
+        cnt += ceil(test[i] / c)
 
 print(cnt)
