@@ -5,28 +5,18 @@ from collections import deque
 
 n, m = map(int, input().split())
 office = [list(map(int, input().split())) for _ in range(n)]
-types = [[] for _ in range(6)]
 dx = [-1,0,1,0]
 dy = [0,1,0,-1]
 answer = n * m
 
-def seperate_type():
-    all_type = list(product(range(2), repeat=4))
-    for t in all_type:
-        t = ''.join(list(map(str, t)))
-        if t.count('1') == 1:
-            types[1].append(t)
-        if t.count('1') == 2:
-            if t == '1010' or t =='0101':
-                types[2].append(t)
-            else:
-                types[3].append(t)
-        if t.count('1') == 3:
-            types[4].append(t)
-        if t.count('1') == 4:
-            types[5].append(t)
-
-seperate_type()
+types = [
+    [],
+    [[0], [1], [2], [3]],
+    [[0,2],[1,3]],
+    [[0,1],[1,2],[2,3],[3,0]],
+    [[0,1,2],[1,2,3],[2,3,0],[3,0,1]],
+    [[0,1,2,3]]
+    ]
 
 cctv = []
 for i in range(n):
@@ -34,36 +24,34 @@ for i in range(n):
         if 1 <= office[i][j] <= 5:
             cctv.append((i,j, office[i][j]))
 
-def watch_cctv(x, y, d):
-    while True:
-        nx, ny = x + dx[d], y + dy[d]
-        if 0<=nx<n and 0<=ny<m:
-            if office[nx][ny] == 6:
+def watch_cctv(graph, x, y, cur):
+    for i in cur:
+        nx, ny = x, y
+        while True:
+            nx += dx[i]
+            ny += dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= m:
                 break
-            if office[nx][ny] == 0:
-                office[nx][ny] = -1
-            x, y = nx, ny
-        else:
-            break
-
-def dfs(depth):
-    global office, answer
+            if graph[nx][ny] == 6:
+                break
+            if graph[nx][ny] == 0:
+                graph[nx][ny] = -1
+            
+def dfs(depth, graph):
+    global answer
     if depth == len(cctv):
         corner = 0
-        for j in office:
+        for j in graph:
             corner += j.count(0)
         answer = min(answer, corner)
         return
     x, y, t = cctv[depth]
 
-    board = copy.deepcopy(office)
-    for cur_type in types[t]:
-        for i in range(4):
-            if cur_type[i] == '1':
-                watch_cctv(x,y,i)
-        dfs(depth+1)
-        office = copy.deepcopy(board)
+    for i in types[t]:
+        board = [c[:] for c in graph]
+        watch_cctv(board, x,y,i)
+        dfs(depth+1, board)
 
 type_index = deque()
-dfs(0)
+dfs(0, office)
 print(answer)
