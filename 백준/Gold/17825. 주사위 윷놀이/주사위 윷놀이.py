@@ -2,77 +2,54 @@ import sys, copy
 input = sys.stdin.readline
 
 dice = list(map(int, input().split()))
-horse = [[0]*2 for _ in range(4)]
+horse = [0]*4
+
 board = [
-    [i*2 for i in range(21)],
-    [10, 13, 16, 19, 25, 30, 35, 40],
-    [20, 22, 24, 25, 30, 35, 40],
-    [30, 28, 26, 26, 25, 30, 35, 40]
+    [1],[2],[3],[4],[5],
+    [6,21],[7],[8],[9],[10],
+    [11,25],[12],[13],[14],[15],
+    [16,27],[17],[18],[19],[20],
+    [32],[22],[23],[24],[30],
+    [26],[24],[28],[29],[24],
+    [31],[20],[32]
+]
+score = [
+    0, 2, 4, 6, 8,
+    10, 12, 14, 16, 18,
+    20, 22, 24, 26, 28,
+    30, 32, 34, 36, 38,
+    40, 13, 16, 19, 25,
+    22, 24, 28, 27, 26,
+    30, 35, 0
 ]
 
 answer = 0
-def play_game(n, score, horse):
+def play_game(n, s):
     global answer
     if n == 10:
-        answer = max(answer, score)
+        answer = max(answer, s)
         return
     
-    # 4개의 말 완전탐색
+    # 말 4개 움직이기
     for i in range(4):
-        # 종료된 말
-        if horse[i][0] == -1:
-            continue
-        cur_horse = copy.deepcopy(horse)
+        x = horse[i]
 
-        # 주사위 굴려서 현재 말 이동하기
-        cur_horse[i][0] += dice[n]
-
-        # 파란색 칸인지 확인하기
-        if cur_horse[i][1] == 0:
-            if cur_horse[i][0] == 5:
-                cur_horse[i][0] = 0
-                cur_horse[i][1] = 1
-            elif cur_horse[i][0] == 10:
-                cur_horse[i][0] = 0
-                cur_horse[i][1] = 2
-            elif cur_horse[i][0] == 15:
-                cur_horse[i][0] = 0
-                cur_horse[i][1] = 3
+        # 시작 점이 파란색이라면
+        if len(board[x]) == 2:
+            x = board[x][1]
+        else:
+            x = board[x][0]
         
-        # 종료되는 지 확인하기
-        if cur_horse[i][0] >= len(board[cur_horse[i][1]]):
-            cur_horse[i][0] = -1
-            play_game(n+1, score, cur_horse)
-            continue
+        # 주사위 수 - 1 만큼 움직이기
+        for _ in range(1, dice[n]):
+            x = board[x][0]
 
-        # 이동한 위치에 말 있는지 확인하기
-        check = False
-        num = board[cur_horse[i][1]][cur_horse[i][0]]
-        for j in range(4):
-            if i == j:
-                continue
-            if cur_horse[j][0] == -1:
-                continue
-            if num != board[cur_horse[j][1]][cur_horse[j][0]]:
-                continue
-            if num == 30:
-                if cur_horse[i] == [0,3] and cur_horse[j] == [0,3]:
-                    check = True
-                    break
-                elif cur_horse[i] != [0,3] and cur_horse[j] != [0,3]:
-                    check = True
-                    break
-            elif num in [16, 22, 24, 26, 28]:
-                if cur_horse[i] == cur_horse[j]:
-                    check = True
-                    break
-            else:
-                    check = True
-                    break
-        if check:
-            continue
-        # 다음 주사위 굴리기
-        play_game(n+1, score + num, cur_horse)
+        # 종료하거나 중복 안되면
+        if x == 32 or (x<32 and x not in horse):
+            temp = horse[i]
+            horse[i] = x
+            play_game(n+1, s + score[x])
+            horse[i] = temp
 
-play_game(0,0,horse)
+play_game(0,0)
 print(answer)
