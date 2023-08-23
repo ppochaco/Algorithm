@@ -25,18 +25,11 @@ def down_block(graph, t, y):
         graph[x-1][y] = 1
 
     # 한 줄씩 팡!
-    remove_row = []
-    for i in range(5,-1,-1):
+    for i in range(2, 6):
         if sum(graph[i]) == 4:
             answer += 1
-            remove_row.append(i)
-    
-    remove_row_num = len(remove_row)
-    for i in remove_row:
-        graph.pop(i)
-    
-    for _ in range(remove_row_num):
-        graph.insert(0, [0]*4)
+            del graph[i]
+            graph.insert(0,[0]*4)
 
     # 특별한 칸 처리하기
     while True:
@@ -59,7 +52,6 @@ for _ in range(n):
         x += 1
     
     down_block(blue, t, 3-x)
-
 
 print(answer)
 count = 0
