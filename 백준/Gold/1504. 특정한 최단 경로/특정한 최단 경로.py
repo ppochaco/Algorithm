@@ -11,7 +11,7 @@ for _ in range(e):
     graph[b].append((c, a))
 
 n1, n2 = map(int, input().split())
-INF = int(1e9)
+INF = sys.maxsize
 
 def dijkstra(start, end):
     queue = []
@@ -34,7 +34,7 @@ type1 = dijkstra(1,n1)+dijkstra(n1,n2)+dijkstra(n2,n)
 type2 = dijkstra(1,n2)+dijkstra(n2,n1)+dijkstra(n1,n)
 
 answer = min(type1, type2)
-if answer >= INF:
+if answer >= sys.maxsize:
     print(-1)
 else:
     print(answer)
