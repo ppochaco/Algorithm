@@ -9,11 +9,8 @@ def solution(s):
         stuple.extend(num.split(','))
     
     answer = [0] * len(maxtuple)
-    for i, num in enumerate(maxtuple):
+    for num in maxtuple:
         index = len(maxtuple) - stuple.count(num)
         answer[index] = int(num)
-    
-    
-    
 
     return answer
