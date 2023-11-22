@@ -1,56 +1,81 @@
+def getNumber(arr):
+    nums = []
+    i, maxi = 0, len(arr)
+    temp = ''
+    
+    while i < maxi:
+        if arr[i].isdigit():
+            temp += arr[i]
+        else:
+            nums.append(temp)
+            temp = ''
+        i += 1
+        
+    nums = ' '.join(nums).split()
+    nums = list(map(int, nums))
+    
+    return nums
+
+def getBonus(arr):
+    bonus = []
+    
+    for c in arr:
+        if c.isalpha():
+            bonus.append(c)
+            
+    return bonus
+
+def getOption(arr):
+    options = []
+    temp = ''
+    
+    for c in arr[1:]:
+        if c.isdigit() and len(temp) > 0:
+            temp = temp[-1]
+            if temp == '#' or temp == '*':
+                options.append(temp)
+            else:
+                options.append('')
+            temp = ''
+        else:
+            temp += c
+    
+    for i, option in enumerate(options):
+        if option == '*' and i > 0:
+            options[i-1] += '*'
+            
+    return options
+
+def getResult(num, bonus, option):
+    grade = 0
+    
+    if bonus == 'S':
+        grade = num
+    elif bonus == 'D':
+        grade = num**2
+    elif bonus == 'T':
+        grade = num**3
+    
+    multi = option.count('*')
+    grade *= 2 ** multi
+    
+    if '#' in option:
+        grade = -grade
+    
+    return grade
+    
 def solution(dartResult):
     dartResult = dartResult + '0'
-    
-    # 점수 분리하기
-    grades = []
-    index = 1
-    temp = dartResult[0]
-    while len(dartResult) > index:
-        if temp == '1' and dartResult[index] == '0':
-            temp += dartResult[index]
-        elif dartResult[index].isdigit():
-            grades.append(temp)
-            temp = dartResult[index]
-        else:
-            temp += dartResult[index]
-        index += 1
-            
-    # 점수 구하기
     answer = 0
-    cur = 0
-    pre = 0
-    for grade in grades:
-        num = 0
-        offset = 0
-        if grade[0:2] == '10':
-            num = 10
-            offset = 1
-        else:
-            num = int(grade[0])
-            
-        bonus = grade[1+offset]
-        
-        option = ''
-        if len(grade) == 3+offset:
-            option = grade[2+offset]
-            
-        if bonus == 'S':
-            cur = num
-        elif bonus == 'D':
-            cur = num**2
-        else:
-            cur = num**3
-        
-        if option == '*':
-            answer += cur*2 + pre
-            cur *= 2
-        elif option == '#':
-            answer -= cur
-            cur = -cur
-        else:
-            answer += cur
-            
-        print(answer)
-        pre = cur
+    
+    nums = getNumber(dartResult)
+    bonus = getBonus(dartResult)
+    options = getOption(dartResult)
+    
+    for i in range(3):
+        answer += getResult(nums[i], bonus[i], options[i])
+
     
     return answer
+
+# 리스트 공백 없애기: join했다가 split 하기
