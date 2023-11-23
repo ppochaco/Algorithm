@@ -12,9 +12,8 @@ def splitBoard(board):
         
     return newBoard
 
-def removeBlock(board, isRemove, x, y, m, n):
+def removeBlock(board, removeList, x, y, m, n):
     count = 1
-
     for i in range(3):
         nx, ny = x + dx[i], y + dy[i]
         if nx < 0 or nx >= m or ny < 0 or ny >= n:
@@ -23,10 +22,10 @@ def removeBlock(board, isRemove, x, y, m, n):
             count += 1
     
     if count == 4:
-        isRemove[x][y] = True
+        removeList.add((x,y))
         for i in range(3):
             nx, ny = x + dx[i], y + dy[i]
-            isRemove[nx][ny] = True
+            removeList.add((nx,ny))
             
 def solution(m, n, board):
     answer = 0
@@ -34,18 +33,16 @@ def solution(m, n, board):
     board = splitBoard(board)
     
     while True:
-        isRemove = [[False]*n for _ in range(m)]  
+        removeList = set() 
         for i in range(m):
             for j in range(n):
                 if board[i][j] != '_':
-                    removeBlock(board, isRemove, i, j, m, n)
+                    removeBlock(board, removeList, i, j, m, n)
 
         removeNum = 0
-        for i in range(m):
-            for j in range(n):
-                if isRemove[i][j]:
-                    board[i][j] = '_'
-                    removeNum += 1
+        for i,j in removeList:
+            board[i][j] = '_'
+            removeNum += 1
 
         if removeNum:
             answer += removeNum
@@ -61,6 +58,6 @@ def solution(m, n, board):
                 tempList.extend(j.split())
             removeBoard[i] = tempList
         board = list(map(list, zip(*removeBoard)))
-        
+
 
     return answer
