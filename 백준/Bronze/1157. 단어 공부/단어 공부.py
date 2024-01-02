@@ -4,11 +4,12 @@ input = sys.stdin.readline
 
 word = input().rstrip().upper()
 charCount = Counter(word)
-mostCount = charCount.most_common()
-if len(mostCount) > 1:
-    if mostCount[0][1] == mostCount[1][1]:
-        print('?')
-    else:
-        print(mostCount[0][0])
-else:
-    print(mostCount[0][0])
+mostCountAlpha, mostCountNum = charCount.most_common()[0]
+
+def get_char(maxAlpha, maxNum):
+    for key, count in charCount.items():
+        if key != maxAlpha and count == maxNum:
+            return '?'
+    return maxAlpha
+
+print(get_char(mostCountAlpha, mostCountNum))
