@@ -1,41 +1,28 @@
 import sys
 input = sys.stdin.readline
 
+s = 0
+a = (1 << 21) - 1
+e = 0
+
 n = int(input())
+for _ in range(n):
+    operation = input().rstrip()
+    if operation == 'all':
+        s = a
+        continue
+    elif operation == 'empty':
+        s = e
+        continue
 
-s = dict()
-while n:
-    string = list(input().strip().split())
-    if len(string) == 1:
-        operation = string[0]
-        if operation == 'all':
-            s = dict()
-            for i in range(1,21):
-                s[str(i)] = str(i)
-        elif operation == 'empty':
-            s = dict()
-        
-    else:
-        operation, num = string
-
-        if operation == 'add':
-            if num not in s:
-                s[num] = num
-        elif operation == 'remove':
-            if num in s:
-                del s[num]
-        elif operation == 'check':
-            if num in s:
-                print(1)
-            else:
-                print(0)
-        elif operation == 'toggle':
-            if num in s:
-                del s[num]
-            else:
-                s[num] = num
-        else:
-            print("??")
-            break
-
-    n -= 1
+    operation, num = operation.split()
+    num = 1<<(20 - int(num))
+    if operation == 'add':
+        s = s|num
+    elif operation == 'remove':
+        num = ~num
+        s = s&num
+    elif operation == 'toggle':
+        s = s^num
+    elif operation == 'check':
+        print(int(bool(s&num)))
