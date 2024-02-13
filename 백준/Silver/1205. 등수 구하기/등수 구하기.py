@@ -9,13 +9,7 @@ def get_rank():
     if len(grade) > p:
         grade = grade[:p]
     
-    ranking = 1
-    for cur in grade:
-        if cur == new:
-            return ranking
-        ranking += 1
-
-    return -1
+    return grade.index(new) + 1
 
 n, new, p = map(int, input().split())
 if n == 0:
