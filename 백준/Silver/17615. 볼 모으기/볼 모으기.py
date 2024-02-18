@@ -27,8 +27,8 @@ def move_blue():
     odd_index = balls.index('R')
     left_num = balls[odd_index:].count('B')
 
-    odd_index = balls.rindex('B')
-    right_num = balls[:odd_index].count('R')
+    odd_index = balls.rindex('R')
+    right_num = balls[:odd_index].count('B')
 
     return min(left_num, right_num)
 
