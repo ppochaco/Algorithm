@@ -1,10 +1,10 @@
 import sys
-from collections import Counter
 input = sys.stdin.readline
 
 n = int(input())
+words = [input().strip() for _ in range(n)]
+answer = set()
+for word in words:
+    answer.add(''.join(sorted(list(word))))
 
-word = set()
-for _ in range(n):
-    word.add(''.join(sorted(input().strip())))
-print(len(word))
+print(len(answer))
