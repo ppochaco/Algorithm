@@ -10,28 +10,19 @@ while True:
     except:
         break
 
-def get_left_cnt(node, p):
-    for i,v in enumerate(p):
-        if node < v:
-            return i
-
-def get_postorder(p):
-    node = p[0]
-
-    if len(p) == 1:
-        print(node)
+def get_preorder(start, end):
+    if start > end:
         return
     
-    left_cnt = get_left_cnt(node, p[1:])
-    if left_cnt:
-        get_postorder(p[1:left_cnt+1])
-    else:
-        left_cnt = 0
+    node = preorder[start]
+    mid = end + 1
+    for i in range(start+1, end+1):
+        if node < preorder[i]:
+            mid = i
+            break
     
-    right_cnt = len(p) - left_cnt - 1
-    if right_cnt > 0:          
-        get_postorder(p[len(p)-right_cnt:])
-    
+    get_preorder(start+1, mid-1)
+    get_preorder(mid, end)
     print(node)
 
-get_postorder(preorder)
+get_preorder(0, len(preorder)-1)
