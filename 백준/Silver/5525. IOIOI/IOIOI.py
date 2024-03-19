@@ -1,24 +1,23 @@
 import sys
+from collections import deque
 input = sys.stdin.readline
 
 n = int(input())
 m = int(input())
 s = input().strip()
 
-Pn = 'I' + ('OI' * n)
-
+pn = 0
 answer = 0
 i = 0
 while i < m:
-    if s[i] == Pn[0]:
-        for j in range(1, len(Pn)):
-            if i + j == m:
-                break
-            if s[i+j] != Pn[j]:
-                break
-        else:
+    if s[i:i+3] == 'IOI':
+        pn += 1
+        if pn == n:
             answer += 1
-        i += 1
+            pn -= 1
+        i += 2
     else:
         i += 1
+        pn = 0
+
 print(answer)
