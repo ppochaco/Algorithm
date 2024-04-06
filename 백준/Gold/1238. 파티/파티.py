@@ -1,37 +1,37 @@
 import sys
-input = sys.stdin.readline
 from heapq import heappush, heappop
+input = sys.stdin.readline
 
 n, m, x = map(int, input().split())
-
-to_graph = [[] for _ in range(n+1)]
-from_graph = [[] for _ in range(n+1)]
+to_road = [[] for _ in range(n+1)]
+from_road = [[] for _ in range(n+1)]
 for _ in range(m):
-    s, e, t = map(int, input().split())
-    to_graph[s].append((t, e))
-    from_graph[e].append((t, s))
+    start, end, weight = map(int, input().split())
+    to_road[end].append((start, weight))
+    from_road[start].append((end, weight))
 
-INF = int(1e9)
-total_time = [0]*(n+1)
+INF = sys.maxsize
+round_time = [0]*(n+1)
 
-def dijkstra(graph):
+def daijkstra(road, start):
     queue = []
     time = [INF] * (n+1)
-    time[x] = 0
-    heappush(queue, (0, x))
+
+    heappush(queue, (0, start))
+    time[start] = 0
     while queue:
-        t, v = heappop(queue)
-        if time[v] != t:
+        cur_time, cur_node = heappop(queue)
+        if time[cur_node] < cur_time:
             continue
-        for next_t, next_v in graph[v]:
-            next_time = t + next_t
-            if next_time < time[next_v]:
-                time[next_v] = next_time
-                heappush(queue, (next_time, next_v))
+        for next_node, next_time in road[cur_node]:
+            if cur_time + next_time < time[next_node]:
+                time[next_node] = cur_time + next_time
+                heappush(queue, (time[next_node], next_node))
+    
     for i in range(1, n+1):
-        total_time[i] += time[i]
+        round_time[i] += time[i]
 
-dijkstra(to_graph)
-dijkstra(from_graph)
+daijkstra(to_road, x)
+daijkstra(from_road, x)
 
-print(max(total_time))
+print(max(round_time))
