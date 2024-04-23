@@ -1,31 +1,33 @@
 import sys
+from heapq import heappush, heappop
 input = sys.stdin.readline
 
 n, m = map(int, input().split())
-
-INF = sys.maxsize
-graph = [[INF]*(n+1) for _ in range(n+1)]
+graph = [[] for _ in range(n+1)]
 for _ in range(m):
     a, b = map(int, input().split())
-    graph[a][b] = graph[b][a] = 1
+    graph[a].append(b)
+    graph[b].append(a)
 
+INF = sys.maxsize
+def dajikstra(start):
+    queue = []
+    visited = [INF]*(n+1)
+
+    heappush(queue, (0, start))
+    visited[start] = 0
+    while queue:
+        weight, node = heappop(queue)
+        for next_node in graph[node]:
+            if visited[next_node] != INF:
+                continue
+            visited[next_node] = weight + 1
+            heappush(queue, (weight + 1, next_node))
+    
+    return visited[1:]
+
+kevin_bacon = []
 for i in range(1, n+1):
-    for j in range(1, n+1):
-        if i == j:
-            graph[i][j] = 0
+    kevin_bacon.append(sum(dajikstra(i)))
 
-def floyd_warshall():
-    for k in range(1, n+1):
-        for i in range(1, n+1):
-            for j in range(1, n+1):
-                graph[i][j] = min(graph[i][j], graph[i][k]+graph[k][j])
-
-floyd_warshall()
-
-graph = [graph[i][1:] for i in range(1, n+1)]
-num = []
-for i,row in enumerate(graph):
-    num.append((sum(row), i+1))
-
-num.sort()
-print(num[0][1])
+print(kevin_bacon.index(min(kevin_bacon)) + 1)
