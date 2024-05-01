@@ -7,22 +7,16 @@ m = int(input())
 m_card = list(map(int, input().split()))
 
 n_card.sort()
-answer = []
+answer_dict = dict()
 
-def find_card(card, left, right):
-    ischecked = 0
-    while left <= right:
-        mid = (left + right) // 2
-        if n_card[mid] < card:
-            left = mid + 1
-        elif n_card[mid] > card:
-            right = mid - 1
-        else:
-            ischecked = 1
-            break
-    answer.append(ischecked)
+for card in m_card:
+    answer_dict[card] = 0
 
+for card in n_card:
+    if card in answer_dict:
+        answer_dict[card] = 1
+
+answer_list = []
 for i in m_card:
-    find_card(i, 0, len(n_card)-1)
-
-print(*answer)
+    answer_list.append(answer_dict[i])
+print(*answer_list)
