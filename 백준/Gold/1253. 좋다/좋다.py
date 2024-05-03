@@ -2,21 +2,29 @@ import sys
 input = sys.stdin.readline
 
 n = int(input())
-nums = list(map(int, input().split()))
-nums.sort()
+num = list(map(int, input().split()))
+
+def is_good_num(cur_num):
+    num_list = num[:]
+    num_list.pop(num_list.index(cur_num))
+    left = 0
+    right = len(num_list) - 1
+    while left < right:
+        two_num_sum = num_list[left] + num_list[right]
+
+        if two_num_sum < cur_num:
+            left += 1
+        elif two_num_sum > cur_num:
+            right -= 1
+        else:
+            return True
+    return False
+
+num.sort()
 
 answer = 0
-for i, goal in enumerate(nums):
-    num_list = nums[:i] + nums[i+1:]
-    start = 0
-    end = len(num_list) -1
-    while start < end:
-        two_sum = num_list[start] + num_list[end]
-        if two_sum == goal:
-            answer += 1
-            break
-        elif two_sum < goal:
-            start += 1
-        else:
-            end -= 1
+for i in range(n):
+    if is_good_num(num[i]):
+        answer += 1
+
 print(answer)
