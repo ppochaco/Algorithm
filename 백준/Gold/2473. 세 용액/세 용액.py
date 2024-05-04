@@ -2,25 +2,32 @@ import sys
 input = sys.stdin.readline
 
 n = int(input())
-nums = list(map(int, input().split()))
-nums.sort()
+num = list(map(int, input().split()))
 
-answer = sys.maxsize
-abc = []
-for i in range(n-2):
-    a = i + 1
-    b = n - 1
-    while a < b:
-        num_sum = nums[a] + nums[b] + nums[i]
-        if abs(num_sum) < answer:
-            answer = abs(num_sum)
-            abc = [nums[a], nums[b], nums[i]]
+def select_three():
+    min_sum = sys.maxsize
+    min_sum_list = []
 
-        if num_sum < 0:
-            a += 1
-        elif num_sum > 0:
-            b -= 1
-        else:
-            break
-        
-print(*sorted(abc))
+    for i in range(n-2):
+        left = i + 1
+        right = len(num) - 1
+        while left < right:
+            num_sum = num[i] + num[left] + num[right]
+
+            if abs(num_sum) < min_sum:
+                min_sum = abs(num_sum)
+                min_sum_list = [num[i], num[left], num[right]]
+
+            if num_sum < 0:
+                left += 1
+            elif num_sum > 0:
+                right -= 1
+            else:
+                return min_sum_list
+            
+    return min_sum_list
+
+num.sort()
+answer = select_three()
+answer.sort()
+print(*answer)
