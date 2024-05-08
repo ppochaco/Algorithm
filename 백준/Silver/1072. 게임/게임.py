@@ -10,18 +10,20 @@ def get_winning_rate(plus):
 
 def get_plus_game():
     left = 0
-    right = x * 2
+    right = x
+    answer = -1
     while left <= right:
         mid = (left + right) // 2
         cur_rate = get_winning_rate(mid)
-        if cur_rate == pre_rate:
-            left = mid + 1
-        else:
+        if pre_rate < cur_rate:
+            answer = mid
             right = mid - 1
+        else:
+            left = mid + 1
     
-    if get_winning_rate(left) != pre_rate:
-        return left
-    else:
-        return -1
+    return answer
 
-print(get_plus_game())
+if pre_rate >= 99:
+    print(-1)
+else:
+    print(get_plus_game())
