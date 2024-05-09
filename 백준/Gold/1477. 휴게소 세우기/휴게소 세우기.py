@@ -30,14 +30,11 @@ def select_term():
 
     return answer
 
-if n != 0:
-    rest_list = [0] + list(map(int, input().split())) + [L]
-    rest_list.sort()
-    
-    for i in range(n+1):
-        term_list.append(rest_list[i+1] - rest_list[i])
 
-    print(select_term())
+rest_list = [0] + list(map(int, input().split())) + [L]
+rest_list.sort()
 
-else:
-    print(math.ceil(L / (m+1)))
+for i in range(n+1):
+    term_list.append(rest_list[i+1] - rest_list[i])
+
+print(select_term())
