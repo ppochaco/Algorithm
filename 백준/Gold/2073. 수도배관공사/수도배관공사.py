@@ -10,10 +10,8 @@ for _ in range(p):
 INF = sys.maxsize
 dp = [INF] + [0]*d
 
-for l, c in pipe:
-    pre_dp = dp.copy()
-    for cur_l in range(l, d+1):
-        if pre_dp[cur_l - l]:
-            dp[cur_l] = max(dp[cur_l], min(pre_dp[cur_l-l], c))
+for (l, c) in pipe:
+    for cur_l in range(d, l-1, -1):
+        dp[cur_l] = max(dp[cur_l], min(dp[cur_l-l], c))
 
 print(dp[-1])
