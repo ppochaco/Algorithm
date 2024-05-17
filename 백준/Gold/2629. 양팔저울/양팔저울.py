@@ -11,11 +11,12 @@ dp = [1] + [0]*max_weight
 
 for cur_weight in weight:
     cur_dp = dp[:]
-    for cur_num in range(max_weight, 0, -1):
-        cur_idx = abs(cur_num - cur_weight)
-        cur_dp[cur_num] = max(dp[cur_idx], dp[cur_num])
-        if cur_num + cur_weight < max_weight:
-            cur_dp[cur_num] = max(cur_dp[cur_num], dp[cur_num+cur_weight])
+    for cur_num in range(max_weight):
+        if dp[cur_num]:
+            cur_dp[abs(cur_num - cur_weight)] = 1
+            cur_dp[cur_num + cur_weight] = 1
+            cur_dp[cur_weight] = 1
+
     dp = cur_dp[:]
 
 for cur_marble in marble:
