@@ -1,25 +1,24 @@
-import copy
 import sys
 input = sys.stdin.readline
 
 n, m = map(int, input().split())
-money = [[0]*(m+1)] + list(map(int, input().split()) for _ in range(n))
-company = list(map(list, zip(*money)))[1:]
+money = [[0]*(m+1)] + list(list(map(int, input().split())) for _ in range(n))
 
 dp = [0] * (n+1)
-visited = [[i] for i in range(n+1)]
-for i in range(n+1):
-    dp[i] = company[0][i]
+visited = [[0]*(n+1) for _ in range(m+1)]
 
-for i in range(1, m):
+for i in range(1, m+1):
     for j in range(n, 0, -1):
-        cur_num = 0
         for cur_money in range(1, j+1):
-            if dp[j] < dp[j - cur_money] + company[i][cur_money]:
-                dp[j] = dp[j - cur_money] + company[i][cur_money]
-                visited[j] = copy.deepcopy(visited[j-cur_money])
-                cur_num = cur_money
-        visited[j].append(cur_num)
+            if dp[j] < dp[j - cur_money] + money[cur_money][i]:
+                dp[j] = dp[j - cur_money] + money[cur_money][i]
+                visited[i][j] = cur_money
+
+cur = visited[m][n]
+answer = [cur]
+for i in range(m-1, 0, -1):
+    answer.append(visited[i][n-cur])
+    cur += visited[i][n-cur]
 
 print(dp[-1])
-print(*visited[-1])
+print(*answer[::-1])
