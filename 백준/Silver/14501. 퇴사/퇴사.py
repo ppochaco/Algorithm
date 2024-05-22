@@ -1,28 +1,16 @@
 import sys
 input = sys.stdin.readline
-answer = 0
-
-def select_day(today, fin_day, total):
-    global answer
-    if today > n:
-        answer = max(answer, total)
-        return
-    
-    if fin_day < today:
-        if end_day[today] <= n:
-            select_day(today + 1, end_day[today], total + price[today])
-    select_day(today + 1, fin_day, total)
-    
 
 n = int(input())
-start_day = [0]
-end_day = [0]
-price = [0]
-for today in range(1, n+1):
-    t, p = map(int, input().split())
-    start_day.append(t)
-    end_day.append(t + today - 1)
-    price.append(p)
+schedule = [[0,0]] + list(list(map(int, input().split())) for _ in range(n))
 
-select_day(1, 0, 0)
-print(answer)
+dp = [0] * (n+2)
+for i in range(n, 0, -1):
+    time, price = schedule[i]
+    end = time + i - 1
+    if n < end:
+        dp[i] = dp[i+1]
+    else:
+        dp[i] = max(dp[i+1], price + dp[end + 1])
+
+print(dp[1])
