@@ -1,18 +1,16 @@
 import sys
 input = sys.stdin.readline
 
-a = ' ' + input().strip()
-b = ' ' + input().strip()
+a = input().strip()
+b = input().strip()
 
-dp = [0]*(len(a))
+dp = [0]*len(b)
+for i in range(len(a)):
+    cnt = 0
+    for j in range(len(b)):
+        if cnt < dp[j]:
+            cnt = dp[j]
+        elif a[i] == b[j]:
+            dp[j] = cnt + 1
 
-for i in range(1, len(b)):
-    cur_dp = dp[:]
-    for j in range(1, len(a)):
-        if b[i] == a[j]:
-            cur_dp[j] = dp[j-1] + 1
-        else:
-            cur_dp[j] = max(dp[j], cur_dp[j-1])
-    dp = cur_dp[:]
-
-print(dp[-1])
+print(max(dp))
