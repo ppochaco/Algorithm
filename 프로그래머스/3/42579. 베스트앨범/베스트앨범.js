@@ -1,46 +1,22 @@
 function solution(genres, plays) {
-    const answer = [];
-    
-    const song_map = new Map();
-    const genres_map = new Map();
-    
-    for (let i = 0; i < genres.length; i++) {
-        if (song_map.has(genres[i])) {
-            song_map.set(genres[i], [...song_map.get(genres[i]), [i, plays[i]]]);
-        } else {
-            song_map.set(genres[i], [[i, plays[i]]]);
-        }
-        
-        genres_map.set(genres[i], (genres_map.get(genres[i]) ?? 0) + plays[i]);
-    }
-    
-    const genres_rank = [...genres_map].sort((a, b) => {
-        if (a[1] < b[1]) {
-            return 1;
-        } else {
-            return -1;
-        }
+    const genres_sum = {};
+    genres.forEach((genre, i) => {
+        genres_sum[genre] = genres_sum[genre] ? genres_sum[genre] + plays[i] : plays[i]
     })
     
-    for (let [genre, _] of genres_rank) {
-        const play_sort = [...song_map.get(genre)].sort((a, b) => {
-            if (a[1] > b[1]) {
-                return 1;
-            } else {
-                return -1;
-            }
+    const genres_cnt = {};
+    return genres
+        .map((genre, i) => ({genre, play: plays[i], index: i}))
+        .sort((a, b) => {
+            if(a.genre !== b.genre) return genres_sum[b.genre] - genres_sum[a.genre]
+            if (a.play !== b.play) return b.play - a.play
+            return a.index - b.index
         })
-        
-        for (let i = 0; i < 2; i ++) {
-            if (!play_sort.length) {
-                break
-            }
+        .filter(a => {
+            if (genres_cnt[a.genre] == 2) return false
             
-            answer.push(play_sort.pop()[0])
-        }
-        
-        
-    }
-    
-    return answer;
+            genres_cnt[a.genre] = (genres_cnt[a.genre] ?? 0) + 1
+            return true
+        })
+        .map(a => a.index)
 }
