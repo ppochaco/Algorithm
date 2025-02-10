@@ -1,46 +1,30 @@
 function solution(bridge_length, weight, truck_weights) {
-    var answer = 0;
-    const bridge = []
+    let answer = 0
     
-    while(1) {
-        let bridge_weights = bridge.reduce((cur, sum) => cur+ sum, 0)
-        if (bridge.length === bridge_length) {
-            bridge_weights -= bridge[bridge_length -1]
-        }
-        
-        
-        if (!truck_weights.length && !bridge_weights.length) {
-            answer += 1
-            bridge.unshift(0)
-            
-            if (bridge_length < bridge.length) {
-                bridge.pop()
-            }
-            
-            if (!bridge_weights) {
-                break
-            }
-        
-            continue
-        }
-        
-        const cur_truck = truck_weights.shift()
-
-        if (cur_truck + bridge_weights <= weight) {
-            bridge.unshift(cur_truck)
-        } else {
-            bridge.unshift(0)
-            truck_weights.unshift(cur_truck)
+    let bridge_weight = 0
+    const bridge_queue = []
+    const weight_queue = []
+    
+    do {
+        // 1. 다리 위의 트럭 이동하기
+        for(let i in bridge_queue) {
+            bridge_queue[i] -= 1
         }
 
-       
-        if (bridge_length < bridge.length) {
-            bridge.pop()
+        // 2. 도착한 트럭 무게 제외하기
+        if(bridge_queue[0] === 0) {
+            bridge_weight -= weight_queue.shift()
+            bridge_queue.shift()
         }
-        
-        
-        answer ++
-    }
+
+        // 3. 추가 트럭 가능하면 출발하기
+        if (bridge_weight + truck_weights[0] <= weight) {
+            weight_queue.push(truck_weights[0])
+            bridge_queue.push(bridge_length)
+            bridge_weight += truck_weights.shift()
+        }
+        answer += 1
+    } while(bridge_queue.length)
     
-    return answer;
+    return answer
 }
