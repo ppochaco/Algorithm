@@ -1,17 +1,19 @@
 function solution(prices) {
-    var answer = [];
+    const answer = Array.from({ length: prices.length }, () => 0)
+    const stack = []
     
     for (let i = 0; i < prices.length; i++) {
-        let down_time = prices.length - 1
-        for (let j = i + 1; j < prices.length; j++) {
-            if (prices[j] < prices[i]) {
-                down_time = j
-                break
-            }
+        while (stack.length && prices[i] < stack[stack.length - 1].price) {
+            const prev = stack.pop()
+            answer[prev.index] = i - prev.index
         }
-        
-        answer.push(down_time - i)
+        stack.push({ index: i, price: prices[i] })
     }
     
-    return answer;
+    for (let cur of stack) {
+        answer[cur.index] = prices.length - 1 - cur.index
+    }
+    
+    
+    return answer
 }
