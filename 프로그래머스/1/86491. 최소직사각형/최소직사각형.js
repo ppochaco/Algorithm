@@ -1,12 +1,10 @@
 function solution(sizes) {
-    let max_w = 0, max_h = 0
+    const rotated_card = sizes.map(([w, h]) => w < h ? [h, w] : [w, h])
     
-    for (let [a, b] of sizes) {
-        const case1 = Math.max(0, max_w - a) + Math.max(0, max_h - b)
-        const case2 = Math.max(0, max_w - b) + Math.max(0, max_h - a)
-        
-        max_w =  case1 < case2 ? Math.max(max_w, a) : Math.max(max_w, b)
-        max_h =  case1 < case2 ? Math.max(max_h, b) : Math.max(max_h, a)
+    let max_w = 0, max_h = 0
+    for (let [w, h] of rotated_card) {
+        if (max_w < w) max_w = w
+        if (max_h < h) max_h = h
     }
     
     return max_w * max_h
