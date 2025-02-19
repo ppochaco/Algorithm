@@ -14,7 +14,8 @@ function solution(answers) {
         }
     }
     
-    const max_grade = su_grade.reduce((prev, cur) => prev < cur ? cur : prev)
+    const max_grade = Math.max(...su_grade)
+    console.log(Math.max.apply(null, su_grade))
     const answer = []
     for (let i = 0; i < 3; i ++) {        
         if (su_grade[i] === max_grade) {
