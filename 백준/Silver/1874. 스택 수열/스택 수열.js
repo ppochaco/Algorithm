@@ -9,14 +9,13 @@ const input = require("fs")
 const n = input.shift();
 const arr = input;
 
-let cur_num = 2;
-const stack = [1];
-const answer = ["+"];
-for (let i = 0; i < n; i++) {
-  while (stack) {
-    const stack_top = stack[stack.length - 1];
+let cur_num = 1;
+const stack = [];
+const answer = [];
 
-    if (stack_top === arr[i]) {
+for (let i = 0; i < n; i++) {
+  while (true) {
+    if (stack.length && stack[stack.length - 1] === arr[i]) {
       stack.pop();
       answer.push("-");
       break;
