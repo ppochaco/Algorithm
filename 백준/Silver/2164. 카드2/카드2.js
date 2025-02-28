@@ -44,11 +44,6 @@ for (let i = 1; i <= n; i++) {
 
 while (queue.size() !== 1) {
   queue.pop();
-
-  if (queue.size() === 1) {
-    break;
-  }
-
   queue.push(queue.pop());
 }
 
