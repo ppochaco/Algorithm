@@ -8,28 +8,23 @@ const input = require("fs")
 const n = Number(input.shift());
 const nums = input.shift().split(" ").map(Number);
 
-const index = Array.from({ length: n }, () => []);
+const tree = Array.from({ length: n }, () => []);
 
-function find_index(start, end, depth) {
+function visit_tree(start, end, depth) {
   let mid = Math.floor((start + end) / 2);
 
   if (depth === n) return;
 
-  index[depth].push(mid);
-  find_index(start, mid - 1, depth + 1);
-  find_index(mid + 1, end, depth + 1);
+  tree[depth].push(nums[mid]);
+  visit_tree(start, mid - 1, depth + 1);
+  visit_tree(mid + 1, end, depth + 1);
 }
 
-find_index(0, nums.length - 1, 0);
+visit_tree(0, nums.length - 1, 0);
 
 const answer = [];
-for (let i = 0; i < index.length; i++) {
-  const level = [];
-  for (let j = 0; j < index[i].length; j++) {
-    level.push(nums[index[i][j]]);
-  }
-
-  answer.push(level.join(" "));
+for (let i = 0; i < tree.length; i++) {
+  answer.push(tree[i].join(" "));
 }
 
 console.log(answer.join("\n"));
