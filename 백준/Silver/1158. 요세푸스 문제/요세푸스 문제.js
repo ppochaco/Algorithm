@@ -13,14 +13,13 @@ for (let i = 1; i <= n; i++) {
 
 const answer = [];
 
+let index = 0;
 while (deque.length) {
-  let pop_push = k - 1;
-  while (pop_push) {
-    deque.push(deque.shift());
-    pop_push--;
-  }
+  index += k - 1;
+  index %= deque.length;
 
-  answer.push(deque.shift());
+  const [delete_num] = deque.splice(index, 1);
+  answer.push(delete_num);
 }
 
 console.log("<" + answer.join(", ") + ">");
