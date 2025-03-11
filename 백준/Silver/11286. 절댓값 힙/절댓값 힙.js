@@ -30,17 +30,10 @@ class Heap {
     while (index > 0) {
       let parentIndex = Math.floor((index - 1) / 2);
 
-      if (Math.abs(this.heap[index]) < Math.abs(this.heap[parentIndex])) {
-        this.swap(parentIndex, index);
-        index = parentIndex;
-      } else if (
-        Math.abs(this.heap[index]) === Math.abs(this.heap[parentIndex])
-      ) {
-        if (this.heap[index] <= this.heap[parentIndex]) {
-          this.swap(parentIndex, index);
-          index = parentIndex;
-        } else break;
-      } else break;
+      if (this.isSmaller(this.heap[parentIndex], element)) break;
+
+      this.swap(parentIndex, index);
+      index = parentIndex;
     }
   }
 
@@ -59,27 +52,17 @@ class Heap {
       let right = left + 1;
       let smaller = index;
 
-      if (!this.heap[left]) break;
-
-      if (Math.abs(this.heap[left]) < Math.abs(this.heap[smaller]))
-        smaller = left;
-
       if (
-        Math.abs(this.heap[left]) === Math.abs(this.heap[smaller]) &&
-        this.heap[left] < this.heap[smaller]
+        this.heap[left] &&
+        this.isSmaller(this.heap[left], this.heap[smaller])
       )
         smaller = left;
 
-      if (this.heap[right]) {
-        if (Math.abs(this.heap[right]) < Math.abs(this.heap[smaller]))
-          smaller = right;
-
-        if (
-          Math.abs(this.heap[right]) === Math.abs(this.heap[smaller]) &&
-          this.heap[right] < this.heap[smaller]
-        )
-          smaller = right;
-      }
+      if (
+        this.heap[right] &&
+        this.isSmaller(this.heap[right], this.heap[smaller])
+      )
+        smaller = right;
 
       if (smaller !== index) {
         this.swap(smaller, index);
@@ -89,18 +72,26 @@ class Heap {
 
     return removed;
   }
+
+  isSmaller(a, b) {
+    if (Math.abs(a) === Math.abs(b)) return a < b;
+    return Math.abs(a) < Math.abs(b);
+  }
 }
 
 let index = 0;
 const n = Number(input[index++]);
+const answer = [];
 
 const heap = new Heap();
 for (let i = 0; i < n; i++) {
   const x = Number(input[index++]);
 
   if (x === 0) {
-    console.log(heap.pop());
+    answer.push(heap.pop());
   } else {
     heap.push(x);
   }
 }
+
+console.log(answer.join("\n"));
