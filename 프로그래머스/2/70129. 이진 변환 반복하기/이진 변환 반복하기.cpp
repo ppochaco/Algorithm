@@ -18,17 +18,13 @@ vector<int> solution(string s) {
         }
 
         int num = x.size();
-        vector <int> digits;
-
+        s = "";
+        
         while(num > 0) {
-            digits.push_back(num % 2);
+            s += to_string(num % 2);
             num /= 2;
         }
-        reverse(digits.begin(), digits.end());
-
-        s = "";
-        for (auto d : digits)
-            s += to_string(d);
+        reverse(s.begin(), s.end());
 
         answer[0]++;
     }
