@@ -22,37 +22,31 @@ const directions = [
 console.log(bfs());
 
 function bfs() {
-  const visited = Array.from({ length: n }, () =>
-    Array.from({ length: m }, () => Array(k + 1).fill(0))
-  );
-  visited[0][0][0] = 1;
+  const visited = Array.from({ length: n }, () => Array(m).fill(-1));
+  visited[0][0] = k;
 
-  let queue = [[0, 0, 0]];
+  let queue = [[k, 1, 0, 0]];
   while (queue.length) {
     const next_queue = [];
 
-    for (const [broke, x, y] of queue) {
+    for (const [wall, distance, x, y] of queue) {
       if (x === n - 1 && y === m - 1) {
-        return visited[x][y][broke];
+        return distance;
       }
 
       for (const [dx, dy] of directions) {
         const nx = x + dx;
         const ny = y + dy;
+        let nwall = wall;
 
         if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
 
-        if (map[nx][ny] === 0 && visited[nx][ny][broke] === 0) {
-          visited[nx][ny][broke] = visited[x][y][broke] + 1;
-          next_queue.push([broke, nx, ny]);
-        } else if (
-          map[nx][ny] === 1 &&
-          broke < k &&
-          visited[nx][ny][broke + 1] === 0
-        ) {
-          visited[nx][ny][broke + 1] = visited[x][y][broke] + 1;
-          next_queue.push([broke + 1, nx, ny]);
-        }
+        if (map[nx][ny] === 1) nwall = wall - 1;
+
+        if (nwall <= visited[nx][ny]) continue;
+
+        visited[nx][ny] = nwall;
+        next_queue.push([nwall, distance + 1, nx, ny]);
       }
     }
 
