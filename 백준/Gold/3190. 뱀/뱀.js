@@ -16,11 +16,12 @@ for (let i = 0; i < k; i++) {
 }
 
 const l = Number(input[index++]);
-const turns = {};
+const turns = [];
 for (let i = 0; i < l; i++) {
   const [time, direction] = input[index++].split(" ");
-  turns[time] = direction;
+  turns.push({ time: Number(time), direction });
 }
+let turn_index = 0;
 
 const direction = [
   [0, 1],
@@ -57,13 +58,14 @@ function move() {
     board[nx][ny] = "S";
     snake.push({ x: nx, y: ny });
 
-    for (let [t, dir] of Object.entries(turns)) {
-      if (time === Number(t)) {
-        if (dir === "L") d = d - 1;
-        else d = d + 1;
+    if (turn_index < l) {
+      const turn = turns[turn_index];
 
-        if (d < 0) d += 4;
-        if (d >= 4) d -= 4;
+      if (time === turn.time) {
+        if (turn.direction === "L") d = (d + 3) % 4;
+        else d = (d + 1) % 4;
+
+        turn_index++;
       }
     }
 
