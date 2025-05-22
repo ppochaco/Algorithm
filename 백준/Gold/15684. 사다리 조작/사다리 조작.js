@@ -19,42 +19,28 @@ for (let i = 1; i <= h; i++) {
     if (ladder[i][j] === 1) continue;
     if (1 <= j - 1 && ladder[i][j - 1] === 1) continue;
     if (j + 1 <= n && ladder[i][j + 1] === 1) continue;
-
     candidate.push([i, j]);
   }
 }
 
 let answer = -1;
-for (let i = 0; i <= 3; i++) {
-  add_ladder(i, [], 0);
-  if (answer !== -1) {
-    break;
-  }
-}
+add_ladder(0, [], 0);
 console.log(answer);
 
 function add_ladder(k, arr, index) {
-  if (arr.length === k) {
-    const copy_ladder = ladder.map((l) => l.slice());
-    for (let i = 0; i < arr.length; i++) {
-      const [x, y] = arr[i];
-      copy_ladder[x][y] = 1;
-    }
-
-    for (let i = 1; i <= n; i++) {
-      if (i !== down_ladder(copy_ladder, 0, i)) {
-        return;
-      }
-    }
+  if (down_ladder(ladder)) {
     answer = k;
     return;
   }
 
+  if (answer !== -1) return;
+  if (k === 3) return;
+
   for (let i = index; i < candidate.length; i++) {
     let check = false;
+    const [nx, ny] = candidate[i];
     for (let j = 0; j < arr.length; j++) {
       const [x, y] = arr[j];
-      const [nx, ny] = candidate[i];
       if (x === nx && ny - y === 1) {
         check = true;
         break;
@@ -62,20 +48,27 @@ function add_ladder(k, arr, index) {
     }
     if (check) continue;
 
-    add_ladder(k, [...arr, candidate[i]], i + 1);
+    ladder[nx][ny] = 1;
+    add_ladder(k + 1, [...arr, candidate[i]], i + 1);
+    ladder[nx][ny] = 0;
   }
 }
 
-function down_ladder(ladder, x, y) {
-  while (x <= h) {
-    if (ladder[x][y - 1]) {
-      y -= 1;
-    } else if (ladder[x][y]) {
-      y += 1;
-    }
+function down_ladder(ladder) {
+  for (let i = 1; i <= n; i++) {
+    let x = 0;
+    let y = i;
+    while (x <= h) {
+      if (ladder[x][y - 1]) {
+        y -= 1;
+      } else if (ladder[x][y]) {
+        y += 1;
+      }
 
-    x++;
+      x++;
+    }
+    if (y !== i) return false;
   }
 
-  return y;
+  return true;
 }
