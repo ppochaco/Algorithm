@@ -14,18 +14,12 @@ for (let i = 0; i < n; i++) {
   const arr = input[index++].split("");
   for (let j = 0; j < n; j++) {
     if (arr[j] === "B" && !point.length) {
-      if (arr[j + 1] === arr[j]) point = [i, j + 1, "row"];
-      else point = [i + 1, j, "col"];
+      point = get_point(i, j, arr);
     } else if (arr[j] === "E" && !end_point.length) {
-      if (arr[j + 1] === arr[j]) end_point = [i, j + 1, "row"];
-      else end_point = [i + 1, j, "col"];
+      end_point = get_point(i, j, arr);
     }
 
-    if (isNaN(arr[j])) {
-      arr[j] = 0;
-    } else {
-      arr[j] = Number(arr[j]);
-    }
+    arr[j] = isNaN(arr[j]) ? 0 : Number(arr[j]);
   }
   board.push(arr);
 }
@@ -94,12 +88,10 @@ function bfs(x, y, p) {
     }
 
     if (rotate(x, y, p)) {
-      if (p === "row" && visited["col"][x][y] === -1) {
-        visited["col"][x][y] = visited["row"][x][y] + 1;
-        queue.push([x, y, "col"]);
-      } else if (p === "col" && visited["row"][x][y] === -1) {
-        visited["row"][x][y] = visited["col"][x][y] + 1;
-        queue.push([x, y, "row"]);
+      const np = p === "row" ? "col" : "row";
+      if (visited[np][x][y] === -1) {
+        visited[np][x][y] = visited[p][x][y] + 1;
+        queue.push([x, y, np]);
       }
     }
   }
@@ -114,7 +106,7 @@ function is_end(x, y, p) {
   else false;
 }
 
-function rotate(x, y, p) {
+function rotate(x, y) {
   for (let dx of [-1, 0, 1]) {
     for (let dy of [-1, 0, 1]) {
       const nx = x + dx;
@@ -126,4 +118,9 @@ function rotate(x, y, p) {
   }
 
   return true;
+}
+
+function get_point(x, y, arr) {
+  if (arr[y + 1] === arr[y]) return [x, y + 1, "row"];
+  return [x + 1, y, "col"];
 }
