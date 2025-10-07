@@ -10,8 +10,10 @@ function solution(m, musicinfos) {
     function get_candidates(musicinfo) {
         const [start_time, end_time, title, melody] = musicinfo.split(',');
         const play_time = get_play_time(start_time, end_time);
-        const total_melody = get_total_melody(play_time, parse_melody(melody));
-        if (is_that_song(total_melody, parse_melody(m))) {
+        const cur_melody = normalize_melody(melody);
+        const total_melody = cur_melody.repeat(Math.ceil(play_time / cur_melody.length)).substr(0, play_time);
+        const is_that_song = total_melody.includes(normalize_melody(m));
+        if (is_that_song) {
             candidates.push({ play_time, title })
         }
     }
@@ -32,47 +34,6 @@ function parse_time(str) {
     return { hour, minute }
 }
 
-function parse_melody(str) {
-    const result = [];
-    for (let i = 0; i < str.length; i++) {
-        if (str[i] === '#') {
-            result.push(result.pop() + '#');
-            continue;
-        }
-        result.push(str[i]);
-    }
-    
-    return result;
-}
-
-function get_total_melody(play_time, melody) {
-    let total_melody = [];
-    for (let i = 0; i < Math.floor(play_time / melody.length); i++) {
-        total_melody = total_melody.concat(melody);
-    }
-    if (play_time % melody.length) {
-        total_melody = total_melody.concat(melody.slice(0, play_time % melody.length));
-    }
-    
-    return total_melody;
-}
-
-function is_that_song(melody, m) {
-    for (let i = 0; i < melody.length; i++) {
-        if (melody[i] === m[0] && is_equal(melody.slice(i, i + m.length), m)) {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-function is_equal(arr1, arr2) {
-    if (arr1.length !== arr2.length) return false;
-    
-    for (let i = 0; i < arr1.length; i++) {
-        if (arr1[i] !== arr2[i]) return false;
-    }
-    
-    return true;
+function normalize_melody(str) {
+    return str.replace(/([A-G])#/g, s => s[0].toLowerCase());
 }
