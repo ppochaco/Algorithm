@@ -32,7 +32,19 @@ function dfs(index, expression) {
 }
 
 function is_zero(expression) {
-  const result = eval(expression.replaceAll(" ", ""));
+  const result = calculate(expression.replaceAll(" ", ""));
   if (result === 0) return true;
   return false;
+}
+
+function calculate(str) {
+  const arr = str.match(/(\d+)|\+|\-/g);
+  let result = Number(arr[0]);
+  
+  for (let i = 1; i < arr.length; i += 2) {
+    if (arr[i] === '-') result -= Number(arr[i + 1]);
+    if (arr[i] === '+') result += Number(arr[i + 1]);
+  }
+
+  return result;
 }
