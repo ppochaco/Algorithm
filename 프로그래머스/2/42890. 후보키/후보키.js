@@ -4,13 +4,12 @@ function solution(relation) {
     for (let i = 1; i <= n; i++) {
         dfs(0, [], i);
     }
-    const answer = check_minimal(candidate).length;
     
-    return answer;
+    return candidate.length;
     
    function dfs(index, arr, r) {
        if (arr.length === r) {
-           if (is_unique(arr, relation)) {
+           if (is_unique(arr, relation) && is_minimal(arr, candidate)) {
                 candidate.push([...arr]);
             }
            return;
@@ -25,31 +24,16 @@ function solution(relation) {
 }
 
 function is_unique(indexList, relation) {
-    if (!indexList.length) return false;
-    
-    const candidate = new Set();
-    for (const row of relation) {
-        const temp = [];
-        for (const index of indexList) {
-            temp.push(row[index]);
-        }
-        candidate.add(temp.join(','));
-    }
-    
-    if (candidate.size === relation.length) return true;
-    return false;
+    if (indexList.length === 0) return false;
+
+    const tuples = relation.map(row => 
+        indexList.map(i => row[i]).join(',')
+    );
+
+    return new Set(tuples).size === relation.length;
 }
 
-function check_minimal(arr) {
-    const result = [];
-    while(arr.length) {
-        const target = arr[0];
-        result.push(target);
-        arr = arr.reduce((acc, cur) => {
-            if (!target.every((num) => cur.includes(num))) acc.push(cur);
-            return acc;
-        }, []);
-    }
-    
-    return result;
+
+function is_minimal(arr, candidate) {
+    return !candidate.find((cur) => cur.every((num) => arr.includes(num)));
 }
