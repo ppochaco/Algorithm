@@ -1,57 +1,62 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().trim().split('\n')
 
-const [n, m, v] = input.shift().split(" ").map(Number);
-const graph = Array.from({ length: n + 1 }, () => []);
-
-for (let i = 0; i < m; i++) {
-  const [a, b] = input[i].split(" ").map(Number);
-  graph[a].push(b);
-  graph[b].push(a);
+const [n, m, v] = input.shift().split(' ').map(Number)
+const graph = Array.from({ length: n + 1 }, () => [])
+for (const line of input) {
+  const [a, b] = line.split(' ').map(Number)
+  graph[a].push(b)
+  graph[b].push(a)
+}
+for (const list of graph) {
+  list.sort((a, b) => a - b)
 }
 
-for (let i = 1; i <= n; i++) {
-  graph[i] = graph[i].sort((a, b) => a - b);
-}
+const dfsAnswer = []
+const bfsAnswer = []
+dfs(v, Array.from({ length: n + 1 }, () => false), dfsAnswer)
+bfs(v, Array.from({ length: n + 1 }, () => false), bfsAnswer)
 
-const dfs_visited = Array.from({ length: n + 1 }, () => false);
-const dfs_answer = [];
-function dfs(cur_node) {
-  dfs_visited[cur_node] = true;
-  dfs_answer.push(cur_node);
+console.log(dfsAnswer.join(' '))
+console.log(bfsAnswer.join(' '))
 
-  for (let next_node of graph[cur_node]) {
-    if (!dfs_visited[next_node]) dfs(next_node);
-  }
-}
+function dfs(start, visited, answer) {
+  const stack = [];
+  
+  stack.push(start);
 
-const bfs_visited = Array.from({ length: n + 1 }, () => false);
-const bfs_answer = [];
-function bfs(start) {
-  const queue = [];
+  while (stack.length) {
+    const node = stack.pop()
+    if (visited[node]) continue
 
-  queue.push(start);
-  bfs_visited[start] = true;
-  bfs_answer.push(start);
+    visited[node] = true
+    answer.push(node)
 
-  while (queue.length) {
-    const cur_node = queue.shift();
+    // 인접 노드를 역순으로 넣으면 재귀 DFS와 같은 순서
+    for (let i = graph[node].length - 1; i >= 0; i--) {
+      const nextNode = graph[node][i];
+      if (visited[nextNode]) continue
 
-    for (let next_node of graph[cur_node]) {
-      if (!bfs_visited[next_node]) {
-        queue.push(next_node);
-        bfs_visited[next_node] = true;
-        bfs_answer.push(next_node);
-      }
+      stack.push(nextNode)
     }
   }
 }
 
-dfs(v);
-bfs(v);
-console.log(dfs_answer.join(" "));
-console.log(bfs_answer.join(" "));
+function bfs(start, visited, answer) {
+  const queue = []
+
+  visited[start] = true
+  queue.push(start)
+  answer.push(start)
+
+  while(queue.length) {
+    const node = queue.shift()
+    
+    for (const nextNode of graph[node]) {
+      if (visited[nextNode]) continue
+      
+      visited[nextNode] = true
+      queue.push(nextNode)
+      answer.push(nextNode)
+    }
+  }
+}
