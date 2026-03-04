@@ -1,41 +1,26 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-const n = Number(input.shift());
-const m = Number(input.shift());
-
-const graph = Array.from({ length: n + 1 }, () => []);
-for (let i = 0; i < m; i++) {
-  const [a, b] = input[i].split(" ").map(Number);
-  graph[a].push(b);
-  graph[b].push(a);
+const n = Number(input[0])
+const k = Number(input[1])
+const computers = Array.from({ length: n + 1 }, () => [])
+for (let i = 2; i < k + 2; i++) {
+  const [a, b] = input[i].split(' ').map(Number)
+  computers[a].push(b)
+  computers[b].push(a)
 }
 
-function get_virus_cnt(start) {
-  const visited = Array.from({ length: n + 1 }, () => false);
-  const queue = [];
-  let virus = 0;
+const visited = Array.from({ length: n + 1 }, () => false)
+let answer = 0
+visited[1] = true
+dfs(1)
+console.log(answer)
 
-  queue.push(start);
-  visited[start] = true;
+function dfs(index) {
+  for (const next_computer of computers[index]) {
+    if (visited[next_computer]) continue
 
-  while (queue.length) {
-    const cur = queue.shift();
-    for (let i = 0; i < graph[cur].length; i++) {
-      const next = graph[cur][i];
-      if (visited[next]) continue;
-
-      queue.push(next);
-      visited[next] = true;
-      virus++;
-    }
+    visited[next_computer] = true
+    answer++
+    dfs(next_computer)
   }
-
-  return virus;
 }
-
-console.log(get_virus_cnt(1));
