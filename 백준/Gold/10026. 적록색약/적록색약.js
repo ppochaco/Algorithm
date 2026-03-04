@@ -11,28 +11,15 @@ const dy = [1, 0, -1, 0]
 const visited = Array.from({ length: n }, () => Array.from({ length: n }, () => false))
 const red_green_visited = Array.from({ length: n }, () => Array.from({ length: n }, () => false))
 
-let blue = 0
-let red = 0
-let green = 0
+let normal = 0
 let red_green = 0
 for (let i = 0; i < n; i++) {
   for (let j = 0; j < n; j++) {
     if (!visited[i][j]) {
-      if (grid[i][j] === 'B') {
-        blue++
-        visited[i][j] = true
-        dfs('B', i, j)
-      }
-      if (grid[i][j] === 'R') {
-        red++
-        visited[i][j] = true
-        dfs('R', i, j)
-      }
-      if (grid[i][j] === 'G') {
-        green++
-        visited[i][j] = true
-        dfs('G', i, j)
-      }
+      if (grid[i][j] === 'B') red_green++
+      normal++
+      visited[i][j] = true
+      dfs(grid[i][j], i, j)
     }
 
     if (!red_green_visited[i][j] && grid[i][j] !== 'B') {
@@ -41,7 +28,7 @@ for (let i = 0; i < n; i++) {
     }
   }
 }
-console.log(red + green + blue, red_green + blue)
+console.log(normal, red_green)
 
 
 function dfs(target, x, y) {
