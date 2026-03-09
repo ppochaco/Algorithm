@@ -1,53 +1,37 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-let index = 0;
-let t = Number(input[index++]);
+let index = 0
+const t = Number(input[index++])
+const directions = [[-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1]]
 
-const directions = [
-  [-2, -1],
-  [-2, 1],
-  [-1, -2],
-  [-1, 2],
-  [1, -2],
-  [1, 2],
-  [2, -1],
-  [2, 1],
-];
+for (let i = 0; i < t; i++) {
+  const I = Number(input[index++])
+  const [x1, y1] = input[index++].split(' ').map(Number)
+  const [x2, y2] = input[index++].split(' ').map(Number)
 
-while (t--) {
-  const n = Number(input[index++]);
-  const start = input[index++].split(" ").map(Number);
-  const end = input[index++].split(" ").map(Number);
-  console.log(bfs(n, { x: start[0], y: start[1] }, { x: end[0], y: end[1] }));
+  console.log(bfs(I, x1, y1, x2, y2))
 }
 
-function bfs(n, start, end) {
-  const visited = Array.from({ length: n }, () => Array(n).fill(0));
+function bfs(n, startX, startY, endX, endY) {
+  const visited = Array.from({ length: n }, () => Array.from({ length: n }, () => false))
+  let idx = 0
+  const queue = []
 
-  const queue = [[start.x, start.y]];
-  while (queue.length) {
-    const [x, y] = queue.shift();
+  visited[startX][startY] = true
+  queue.push([0, startX, startY])
 
-    if (x === end.x && y === end.y) {
-      return visited[x][y];
-    }
+  while(idx < queue.length) {
+    const [cnt, x, y] = queue[idx++]
+    if (x === endX && y === endY) return cnt
 
     for (const [dx, dy] of directions) {
-      const nx = x + dx;
-      const ny = y + dy;
+      const [nx, ny] = [dx + x, dy + y]
+      
+      if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue
+      if (visited[nx][ny]) continue
 
-      if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue;
-      if (visited[nx][ny]) continue;
-
-      visited[nx][ny] = visited[x][y] + 1;
-      queue.push([nx, ny]);
+      visited[nx][ny] = true
+      queue.push([cnt + 1, nx, ny])
     }
   }
-
-  return -1;
 }
