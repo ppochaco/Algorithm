@@ -1,90 +1,97 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-let index = 0;
-const n = Number(input[index++]);
-
-const space = [];
-for (let i = 0; i < n; i++) {
-  space.push(input[index++].split(" ").map(Number));
+const n = Number(input[0])
+const board = []
+for (let i = 1; i < n + 1; i++) {
+  board.push(input[i].split(' ').map(Number))
 }
 
-let time = 0;
-let size = 2;
-let ate = 0;
-let position;
-
+const candidates = []
+const shark = { x: -1, y: -1, size: 2, eat: 0 }
 for (let i = 0; i < n; i++) {
   for (let j = 0; j < n; j++) {
-    if (space[i][j] === 9) {
-      position = { x: i, y: j };
-      break;
+    if (!board[i][j]) continue
+    if (board[i][j] === 9) {
+      shark.x = i
+      shark.y = j
+      board[i][j] = 0
+      continue
     }
+
+    candidates.push({ x: i, y: j, size: board[i][j]})
+  }
+}
+candidates.sort((a, b) => {
+  if (a.size === b.size) {
+    if (a.x === b.x) return a.y - b.y
+    return a.x - b.x
+  }
+
+  return a.size - b.size
+})
+
+const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+const time = move_shark()
+console.log(time)
+
+function move_shark() {
+  let time = 0
+
+  while(true) {
+    const fish = find_fish()
+    if (!fish) return time
+    
+    const { distance, x, y } = fish
+    time += distance
+    shark.eat++
+    board[x][y] = 0
+    
+    if (shark.eat === shark.size) {
+      shark.eat = 0
+      shark.size++
+    }
+    
+    shark.x = x
+    shark.y = y
   }
 }
 
-while (true) {
-  const fish = find_fish(size, position);
+function find_fish() {
+  const fish = []
+  const visited = Array.from({ length: n }, () => Array.from({ length: n }, () => -1))
+  let idx = 0
+  const queue = []
+  
+  visited[shark.x][shark.y] = 0
+  queue.push([shark.x, shark.y])
 
-  if (fish === -1) break;
+  while(idx < queue.length) {
+    const [x, y] = queue[idx++]
 
-  const { distance, x, y } = fish;
-
-  time += distance;
-  ate += 1;
-  if (ate === size) {
-    size++;
-    ate = 0;
-  }
-
-  space[x][y] = 9;
-  space[position.x][position.y] = 0;
-  position = { x, y };
-}
-
-console.log(time);
-
-function find_fish(size, start) {
-  const dx = [-1, 0, 0, 1];
-  const dy = [0, -1, 1, 0];
-
-  const queue = [[start.x, start.y]];
-  const visited = Array.from({ length: n }, () => Array(n).fill(0));
-  const fish_distance = [];
-
-  while (queue.length) {
-    const [x, y] = queue.shift();
-
-    if (space[x][y] && space[x][y] < size) {
-      fish_distance.push({ distance: visited[x][y], x, y });
+    if (board[x][y] && board[x][y] < shark.size) {
+      fish.push({ distance: visited[x][y], x, y })
     }
 
-    for (let i = 0; i < 4; i++) {
-      const nx = x + dx[i];
-      const ny = y + dy[i];
+    for (const [dx, dy] of directions) {
+      const [nx, ny] = [dx + x, dy + y]
 
-      if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue;
-      if (visited[nx][ny]) continue;
-      if (size < space[nx][ny]) continue;
+      if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue
+      if (visited[nx][ny] !== -1) continue
+      if (shark.size < board[nx][ny]) continue
 
-      visited[nx][ny] = visited[x][y] + 1;
-      queue.push([nx, ny]);
+      visited[nx][ny] = visited[x][y] + 1
+      queue.push([nx, ny])
     }
   }
 
-  if (fish_distance.length === 0) return -1;
-
-  fish_distance.sort((a, b) => {
+  fish.sort((a, b) => {
     if (a.distance === b.distance) {
-      if (a.x === b.x) return a.y - b.y;
-      return a.x - b.x;
+      if (a.x === b.x) return a.y - b.y
+      return a.x - b.x
     }
-    return a.distance - b.distance;
-  });
 
-  return fish_distance[0];
+    return a.distance - b.distance
+  })
+
+  return fish[0]
 }
