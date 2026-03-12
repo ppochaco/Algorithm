@@ -13,25 +13,25 @@ for (let i = 0; i < t; i++) {
 }
 
 function bfs(n, startX, startY, endX, endY) {
-  const visited = Array.from({ length: n }, () => Array.from({ length: n }, () => false))
+  const visited = Array.from({ length: n }, () => Array.from({ length: n }, () => -1))
   let idx = 0
   const queue = []
 
-  visited[startX][startY] = true
-  queue.push([0, startX, startY])
+  visited[startX][startY] = 0
+  queue.push([startX, startY])
 
   while(idx < queue.length) {
-    const [cnt, x, y] = queue[idx++]
-    if (x === endX && y === endY) return cnt
+    const [x, y] = queue[idx++]
+    if (x === endX && y === endY) return visited[x][y]
 
     for (const [dx, dy] of directions) {
       const [nx, ny] = [dx + x, dy + y]
       
       if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue
-      if (visited[nx][ny]) continue
+      if (visited[nx][ny] !== -1) continue
 
-      visited[nx][ny] = true
-      queue.push([cnt + 1, nx, ny])
+      visited[nx][ny] = visited[x][y] + 1
+      queue.push([nx, ny])
     }
   }
 }
