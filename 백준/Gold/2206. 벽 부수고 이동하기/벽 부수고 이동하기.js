@@ -10,33 +10,32 @@ const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 console.log(bfs())
 
 function bfs() {
-  const visited = Array.from({ length: n } , () => Array.from({ length: m }, () => Array.from({ length: 2 }, () => 0)))
+  const visited = Array.from({ length: n } , () => Array.from({ length: m }, () => -1))
   let idx = 0
   const queue = []
 
-  visited[0][0][0] = 1
-  queue.push([0, 0, 0])
+  visited[0][0] = 1
+  queue.push([0, 0, 1, 1])
 
   while(idx < queue.length) {
-    const [x, y, broken] = queue[idx++]
+    const [x, y, wall, distance] = queue[idx++]
+    
     if (x === n -1 && y === m - 1) {
-      return visited[x][y][broken]
+      return distance
     }
 
     for (const [dx, dy] of directions) {
       const [nx, ny] = [dx + x, dy + y]
-      
       if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue
-      if (visited[nx][ny][broken]) continue
+      
+      let nextWall = wall
+      if (board[nx][ny] === 1) nextWall--
+      
+      if (nextWall < 0) continue
+      if (nextWall <= visited[nx][ny]) continue
 
-      if (!board[nx][ny]) {
-        visited[nx][ny][broken] = visited[x][y][broken] + 1
-        queue.push([nx, ny, broken])
-      }
-      if (!broken && board[nx][ny]) {
-        visited[nx][ny][1] = visited[x][y][0] + 1
-        queue.push([nx, ny, 1])
-      }
+      visited[nx][ny] = nextWall
+      queue.push([nx, ny, nextWall, distance + 1])
     }
   }
 
