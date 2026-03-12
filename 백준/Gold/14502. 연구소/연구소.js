@@ -1,93 +1,80 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-let index = 0;
-const [n, m] = input[index++].split(" ").map(Number);
-const board = [];
-for (let i = 0; i < n; i++) {
-  board.push(input[index++].split(" ").map(Number));
+const [n, m] = input[0].split(' ').map(Number)
+const board = []
+for (let i = 1; i < n + 1; i++) {
+  board.push(input[i].split(' ').map(Number))
 }
 
-const safe_zone = [];
-const virus_zone = [];
+const candidates = []
+const virus = []
 for (let i = 0; i < n; i++) {
   for (let j = 0; j < m; j++) {
-    if (board[i][j] === 0) {
-      safe_zone.push([i, j]);
-    } else if (board[i][j] === 2) {
-      virus_zone.push([i, j]);
+    if (!board[i][j]) {
+      candidates.push([i, j])
+    } 
+    
+    else if (board[i][j] === 2) {
+      virus.push([i, j])
     }
   }
 }
 
-const dx = [0, 1, 0, -1];
-const dy = [1, 0, -1, 0];
+let answer = 0
+const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
-let answer = 0;
+make_walls(0, 0, [])
 
-make_wall(0, 0);
-console.log(answer);
+console.log(answer)
 
-function count_safe_zone(board) {
-  let cnt = 0;
-
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < m; j++) {
-      if (board[i][j] === 0) cnt++;
-    }
+function make_walls(walls, index) {
+  if (walls === 3) {
+    const cnt = spread_virus(board.map((row) => [...row]))
+    answer = Math.max(answer, cnt)
+    return
   }
 
-  return cnt;
+  for (let i = index; i < candidates.length; i++) {
+    const [x, y] = candidates[i]
+
+    board[x][y] = 1
+    make_walls(walls + 1, i + 1)
+    board[x][y] = 0
+  }
 }
 
 function spread_virus(board) {
-  const queue = [];
-  for (let i = 0; i < virus_zone.length; i++) {
-    queue.push(virus_zone[i]);
+  let idx = 0
+  const queue = []
+
+  for (const [x, y] of virus) {
+    queue.push([x, y])
   }
 
-  while (queue.length) {
-    const [x, y] = queue.shift();
+  while(idx < queue.length) {
+    const [x, y] = queue[idx++]
 
-    for (let i = 0; i < 4; i++) {
-      const nx = x + dx[i];
-      const ny = y + dy[i];
+    for (const [dx, dy] of directions) {
+      const [nx, ny] = [dx + x, dy + y]
 
-      if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+      if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue
+      if (board[nx][ny]) continue
 
-      if (board[nx][ny]) continue;
-
-      board[nx][ny] = 2;
-      queue.push([nx, ny]);
+      board[nx][ny] = 2
+      queue.push([nx, ny])
     }
   }
 
-  return board;
+  return count_safe_area(board)
 }
 
-function make_wall(cnt, start) {
-  if (cnt === 3) {
-    const cur_board = board.map((b) => b.slice());
-    const virus_board = spread_virus(cur_board);
-
-    answer = Math.max(answer, count_safe_zone(virus_board));
-
-    return;
+function count_safe_area(board) {
+  let cnt = 0
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < m; j++) {
+      if (!board[i][j]) cnt++
+    }
   }
 
-  for (let i = start; i < safe_zone.length; i++) {
-    const [x, y] = safe_zone[i];
-
-    if (x < 0 || y < 0 || x >= n || y >= m) continue;
-
-    if (board[x][y]) continue;
-
-    board[x][y] = 1;
-    make_wall(cnt + 1, i + 1);
-    board[x][y] = 0;
-  }
+  return cnt
 }
