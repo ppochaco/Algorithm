@@ -29,14 +29,14 @@ while(true) {
 console.log(day)
 
 function bfs(startX, startY, visited) {
-  let population = 0
-  let area = 0
-  const positions = []
+  let population = board[startX][startY]
+  const area = [[startX, startY]]
 
   let idx = 0
   const queue = []
 
   queue.push([startX, startY])
+  visited[startX][startY] = true
 
   while(idx < queue.length) {
     const [x, y] = queue[idx++]
@@ -53,16 +53,15 @@ function bfs(startX, startY, visited) {
       visited[nx][ny] = true
       queue.push([nx, ny])
 
-      positions.push([nx, ny])
+      area.push([nx, ny])
       population += board[nx][ny]
-      area++
     }
   }
 
-  if (area === 0) return false
+  if (area.length === 1) return false
 
-  const average = Math.floor(population / area)
-  for (const [x, y] of positions) {
+  const average = Math.floor(population / area.length)
+  for (const [x, y] of area) {
     board[x][y] = average
   }
 
