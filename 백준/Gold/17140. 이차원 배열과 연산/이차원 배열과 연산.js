@@ -1,104 +1,104 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-let index = 0;
-const [r, c, k] = input[index++].split(" ").map(Number);
-let arr = [];
-for (let i = 0; i < 3; i++) {
-  arr.push(input[index++].split(" ").map(Number));
+const [r, c, k] = input[0].split(' ').map(Number)
+let arr = []
+for (let i = 1; i < 4; i++) {
+  arr.push(input[i].split(' ').map(Number))
 }
 
-let r_size = 3;
-let c_size = 3;
+const MAX_TIME = 100
+let time = 0
+for (; time < MAX_TIME + 1; time++) {
+  if (r - 1 < arr.length && c - 1 < arr[0].length && arr[r - 1][c - 1] === k) break
+  arr = arr.length < arr[0].length ? c_operation(arr) : r_operation(arr)
 
-let time = 0;
-let answer = -1;
-while (time <= 100) {
-  if (r - 1 <= r_size && c - 1 <= c_size && arr[r - 1][c - 1] === k) {
-    answer = time;
-    break;
-  }
-
-  if (c_size <= r_size) r_calculate();
-  else c_calculate();
-
-  time++;
 }
 
-console.log(answer);
+console.log(time <= MAX_TIME ? time : -1)
 
-function r_calculate() {
-  for (let i = 0; i < r_size; i++) {
-    arr[i] = calculate(arr[i]);
-    c_size = Math.max(c_size, arr[i].length);
+function r_operation(arr) {
+  const result = Array.from({ length: arr.length }, () => [])
+  let max_n = 0
+
+  for (let i = 0; i < arr.length; i++) {
+    const map = new Map()
+    const row = []
+    for (let j = 0; j < arr[0].length; j++) {
+      const num = arr[i][j]
+      if (!num) continue
+
+      map.set(num, (map.get(num) ?? 0) + 1)
+    }
+    
+    for (const [num, cnt] of map) {
+      row.push({ num , cnt })
+    }
+
+    row.sort((a, b) => {
+      if (a.cnt === b.cnt) return a.num - b.num
+      return a.cnt - b.cnt
+    })
+
+    for (const { num , cnt } of row) {
+      result[i].push(num, cnt)
+    }
+
+    max_n = Math.max(max_n, row.length * 2)
+  }
+  
+  for (let i = 0; i < arr[0].length; i++) {
+    const zero = Array.from({ length: max_n - result[i].length }, () => 0)
+    result[i].push(...zero)
   }
 
-  for (let i = 0; i < r_size; i++) {
-    arr[i] = [...arr[i], ...Array(c_size - arr[i].length).fill(0)];
-  }
+  return result.map((row) => [...row])
 }
 
-function c_calculate() {
-  const swap_arr = swap_rc(arr);
-
-  for (let i = 0; i < c_size; i++) {
-    swap_arr[i] = calculate(swap_arr[i]);
-    r_size = Math.max(r_size, swap_arr[i].length);
-  }
-
-  for (let i = 0; i < c_size; i++) {
-    swap_arr[i] = [
-      ...swap_arr[i],
-      ...Array(r_size - swap_arr[i].length).fill(0),
-    ];
-  }
-
-  arr = swap_rc(swap_arr);
-}
-
-function swap_rc(arr) {
-  const swap_arr = Array.from({ length: arr[0].length }, () =>
-    Array(arr.length).fill(0)
-  );
+function c_operation(arr) {
+  const result = Array.from({ length: arr[0].length }, () => [])
+  let max_n = 0
 
   for (let i = 0; i < arr[0].length; i++) {
+    const map = new Map()
+    const col = []
     for (let j = 0; j < arr.length; j++) {
-      swap_arr[i][j] = arr[j][i];
+      const num = arr[j][i]
+      if (!num) continue
+
+      map.set(num, (map.get(num) ?? 0) + 1)
     }
+    
+    for (const [num, cnt] of map) {
+      col.push({ num , cnt })
+    }
+
+    col.sort((a, b) => {
+      if (a.cnt === b.cnt) return a.num - b.num
+      return a.cnt - b.cnt
+    })
+
+    for (const { num , cnt } of col) {
+      result[i].push(num, cnt)
+    }
+
+    max_n = Math.max(max_n, col.length * 2)
   }
 
-  return swap_arr;
+  for (let i = 0; i < arr[0].length; i++) {
+    const zero = Array.from({ length: max_n - result[i].length }, () => 0)
+    result[i].push(...zero)
+  }
+
+  return rotate_arr(result).map((row) => [...row])
 }
 
-function calculate(arr) {
-  const nums = new Map();
+function rotate_arr(arr) {
+  const result = Array.from({ length: arr[0].length }, () => Array.from({ length: arr.length }, () => 0))
   for (let i = 0; i < arr.length; i++) {
-    if (arr[i] === 0) continue;
-
-    if (nums.has(arr[i])) {
-      nums.set(arr[i], nums.get(arr[i]) + 1);
-    } else {
-      nums.set(arr[i], 1);
+    for (let j = 0; j < arr[0].length; j++) {
+      result[j][i] = arr[i][j]
     }
   }
 
-  const sort_nums = [...nums];
-  sort_nums.sort((a, b) => {
-    if (a[1] === b[1]) {
-      return a[0] - b[0];
-    }
-
-    return a[1] - b[1];
-  });
-
-  const result = [];
-  for (let i = 0; i < sort_nums.length; i++) {
-    result.push(...sort_nums[i]);
-  }
-
-  return result.slice(0, 100);
+  return result
 }
