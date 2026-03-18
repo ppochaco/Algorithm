@@ -2,72 +2,51 @@ const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/st
 
 let idx = 0
 while(true) {
-  const board = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => ''))
-
   const game = input[idx++].split('')
   if (game.join('') === 'end') break
 
-  game.forEach((value, idx) => {
-    const [x, y] = [Math.floor(idx / 3), idx % 3]
-    board[x][y] = value
-  })
-
-  console.log(is_valid(board) ? 'valid' : 'invalid')
+  console.log(is_valid(game) ? 'valid' : 'invalid')
 }
 
-
-function is_valid(board) {
-  const win = [
-    [[0, 0], [0, 1], [0, 2]],
-    [[1, 0], [1, 1], [1, 2]],
-    [[2, 0], [2, 1], [2, 2]],
-    [[0, 0], [1, 0], [2, 0]],
-    [[0, 1], [1, 1], [2, 1]],
-    [[0, 2], [1, 2], [2, 2]],
-    [[0, 0], [1, 1], [2, 2]],
-    [[0, 2], [1, 1], [2, 0]],
-  ]
-
-  const check = []
-  for (const [[x1, y1],[x2, y2], [x3, y3]] of win) {
-    if (board[x1][y1] === '.') continue
-
-    if (board[x1][y1] === board[x2][y2] && board[x2][y2] === board[x3][y3]) {
-      check.push(board[x1][y1])
-    }
-  }
-
-  if (!check.length) return is_tie(board)
-
-  const X = check.filter((cur) => cur === 'X').length
-  const O = check.filter((cur) => cur === 'O').length
-  if (X && O) return false
-
-  return check_count(board, check[0])
-}
-
-function is_tie(board) {
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      if (board[i][j] === '.') return false
-    }
-  }
-
-  return check_count(board)
-}
-
-function check_count(board, win = 'tie') {
+function is_valid(game) {
   let X = 0
   let O = 0
 
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      if (board[i][j] === 'X') X++
-      if (board[i][j] === 'O') O++
-    }
-  }
+  game.forEach((cur) => {
+    if (cur === 'X') X++
+    if (cur === 'O') O++
+  })
 
+  const xWin = is_win(game, 'X')
+  const oWin = is_win(game, 'O')
+
+  if (!check_count(X, O)) return false
+  if (xWin && oWin) return false
+  if (xWin && !check_count(X, O, 'X')) return false
+  if (oWin && !check_count(X, O, 'O')) return false
+  if (!xWin && !oWin && !check_count(X, O, 'TIE')) return false
+
+  return true
+}
+
+function is_win(board, value) {
+  const win = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ]
+
+  return win.some((cur) => cur.every((i) => board[i] === value))
+}
+
+function check_count(X, O, win) {
   if (win === 'X') return X === O + 1
   if (win === 'O') return X === O
+  if (win === 'TIE') return X + O === 9
   return X === O + 1 || X === O
 }
