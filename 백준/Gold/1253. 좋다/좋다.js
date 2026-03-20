@@ -11,17 +11,22 @@ arr.forEach((num, index) => {
   let right = n - 1
 
   while(left < right && right < n) {
+    if (right === index) {
+      right--
+      continue
+    }
+    if (left === index) {
+      left++
+      continue
+    }
+
     const sum = arr[left] + arr[right]
 
     if (num < sum) right--
     else if (sum < num) left++
     else {
-      if (right === index) right--
-      else if (left === index) left++
-      else {
-        answer++
-        break
-      }
+      answer++
+      break
     }
   }
 })
