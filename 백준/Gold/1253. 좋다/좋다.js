@@ -1,35 +1,29 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-const n = Number(input[0]);
-const arr = input[1].split(" ").map(Number);
+const n = Number(input[0])
+const arr = input[1].split(' ').map(Number)
 
-arr.sort((a, b) => a - b);
+arr.sort((a, b) => a - b)
 
-let answer = 0;
-
+let answer = 0
 arr.forEach((num, index) => {
-  let start = 0;
-  let end = n - 1;
+  let left = 0
+  let right = n - 1
 
-  while (start < end) {
-    const sum = arr[start] + arr[end];
+  while(left < right && right < n) {
+    const sum = arr[left] + arr[right]
 
-    if (sum < num) start++;
-    else if (num < sum) end--;
+    if (num < sum) right--
+    else if (sum < num) left++
     else {
-      if (start === index) start++;
-      else if (end === index) end--;
+      if (right === index) right--
+      else if (left === index) left++
       else {
-        answer++;
-        break;
+        answer++
+        break
       }
     }
   }
-});
+})
 
-console.log(answer);
+console.log(answer)
