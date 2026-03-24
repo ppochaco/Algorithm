@@ -1,33 +1,24 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-const n = Number(input.shift());
-const nums = input.shift().split(" ").map(Number);
-nums.sort((a, b) => a - b);
+const N = Number(input[0])
+const arr = input[1].split(' ').map(Number)
+arr.sort((a, b) => a - b)
 
-let start = 0;
-let end = n - 1;
-let min_index = { start, end };
+const value = []
+let left = 0
+let right = N - 1
+while(left < right) {
+  const diff = arr[right] + arr[left]
+  value.push({ diff: Math.abs(diff), left, right })
 
-while (start < end) {
-  const sum = nums[start] + nums[end];
-
-  if (Math.abs(sum) < Math.abs(nums[min_index.end] + nums[min_index.start])) {
-    min_index = { start, end };
-  }
-
-  if (sum < 0) {
-    start++;
-  } else if (sum > 0) {
-    end--;
+  if (diff < 0) {
+    left++
+  } else if (0 < diff) {
+    right--
   } else {
-    min_index = { start, end };
-    break;
+    break
   }
 }
 
-console.log(nums[min_index.start], nums[min_index.end]);
+value.sort((a, b) => a.diff - b.diff)
+console.log(arr[value[0].left], arr[value[0].right])
