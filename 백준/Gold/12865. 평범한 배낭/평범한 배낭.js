@@ -1,21 +1,17 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-let index = 0;
-const [n, k] = input[index++].split(" ").map(Number);
-const bag = Array.from({ length: k + 1 }, () => 0);
+const [N, K] = input[0].split(' ').map(Number)
+const items = []
+for (let i = 1; i < N + 1; i++) {
+  items.push(input[i].split(' ').map(Number))
+}
 
-for (let i = 0; i < n; i++) {
-  const [w, v] = input[index++].split(" ").map(Number);
-  for (let j = k; j > 0; j--) {
-    if (w <= j) {
-      bag[j] = Math.max(bag[j], bag[j - w] + v);
+const bags = Array(K + 1).fill(0)
+for (const [W, V] of items) {
+  for (let i = K; i > 0; i--) {
+    if (0 <= i - W) {
+      bags[i] = Math.max(bags[i], bags[i - W] + V)
     }
   }
 }
-
-console.log(bag[k]);
+console.log(bags[K])
