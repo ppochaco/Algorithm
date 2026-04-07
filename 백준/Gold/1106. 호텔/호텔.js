@@ -1,24 +1,20 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .split("\n");
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-const [c, n] = input.shift().split(" ").map(Number);
-
-const INF = 100_001;
-const money = [0, ...Array.from({ length: c }, () => INF)];
-
-for (let i = 0; i < n; i++) {
-  const [cost, customer] = input[i].split(" ").map(Number);
-
-  for (let cur_customer = 0; cur_customer <= c; cur_customer++) {
-    money[cur_customer] = Math.min(
-      money[cur_customer],
-      cur_customer < customer ? cost : money[cur_customer - customer] + cost
-    );
-  }
+const [C, N] = input[0].split(' ').map(Number)
+const city = []
+for (let i = 1; i < N + 1; i++) {
+  city.push(input[i].split(' ').map(Number))
 }
 
-console.log(money[c]);
+const dp = Array(C + 1).fill(Infinity)
+dp[0] = 0
+
+for (const [cost, customer] of city) {
+  for (let i = 0; i < customer; i++) {
+    dp[i] = Math.min(dp[i], cost)
+  }
+  for (let i = customer; i <= C; i++) {
+    dp[i] = Math.min(dp[i], dp[i - customer] + cost)
+  }
+}
+console.log(dp[C])
