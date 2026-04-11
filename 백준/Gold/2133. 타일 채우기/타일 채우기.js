@@ -1,28 +1,14 @@
-const input = require("fs")
-  .readFileSync(
-    process.platform === "linux" ? "/dev/stdin" : __dirname + "/input.txt"
-  )
-  .toString()
-  .trim();
+const input = require('fs').readFileSync(process.platform === 'linux' ? '/dev/stdin' : __dirname + '/input.txt').toString().split('\n')
 
-const n = Number(input);
+const N = Number(input[0])
+const dp = Array(N + 1).fill(0)
+dp[0] = 1
+dp[2] = 3
 
-const dp = Array.from({ length: n + 1 }, () => 0);
-
-function tileCount(width) {
-  if (!width) return 1;
-  if (width % 2) return 0;
-  if (width === 2) return 3;
-
-  if (dp[width] !== 0) return dp[width];
-
-  let cur_count = 3 * tileCount(width - 2);
-  for (let i = 4; i <= width; i += 2) {
-    cur_count += 2 * tileCount(width - i);
+for (let i = 4; i <= N; i += 2) {
+  dp[i] = dp[i - 2] * 3
+  for (let j = 4; j <= i; j += 2) {
+    dp[i] += dp[i - j] * 2
   }
-
-  dp[width] = cur_count;
-  return dp[width];
 }
-
-console.log(tileCount(n));
+console.log(dp[N])
