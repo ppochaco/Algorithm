@@ -1,24 +1,23 @@
+from collections import deque
+
 T = 10
 
 for _ in range(1, T + 1):
   tc = int(input())
-  arr = list(map(int, input().split()))
+  arr = deque(map(int, input().split()))
   
-  index = 0
-  minus = [1, 2, 3, 4, 5]
-  check = False
-  while not check:
-    for i, m in enumerate(minus):
-      cur_index = (index + i) % 8
-      arr[cur_index] -= m
-      
-      if arr[cur_index] <= 0:
-        arr[cur_index] = 0
-        check = True
-        break
-    
-    index = (index + 5) % 8
+  number = 1
+  while True:
+    cur = arr.popleft() - number
+  
+    if cur <= 0:
+      arr.append(0)
+      break
 
-  zero_index = arr.index(0)
-  answer = ' '.join(map(str,arr[zero_index + 1:] + arr[:zero_index + 1]))
-  print(f"#{tc} {answer}")
+    arr.append(cur)
+    
+    number += 1
+    if number == 6:
+      number = 1
+
+  print(f"#{tc}", *arr)
