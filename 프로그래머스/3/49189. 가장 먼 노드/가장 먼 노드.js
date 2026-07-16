@@ -19,10 +19,7 @@ function solution(n, edge) {
     visited[1] = 0
     
     const max_distance = Math.max(...visited)
-    let answer = 0
-    for (let i = 1; i <= n; i++) {
-        if (max_distance === visited[i]) answer++
-    }
+    const answer = visited.filter((distance) => distance === max_distance).length
     
     return answer;
 }
