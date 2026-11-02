@@ -1,13 +1,16 @@
 function solution(phone_book) {
-    var answer = true;
-    
-    phone_book.sort();
-    
-    for (let i = 0; i < phone_book.length - 1; i++) {
-        if (phone_book[i+1].startsWith(phone_book[i])) {
-            return false;
+    const phone_set = new Set()
+    for (const phone of phone_book) {
+        let k = 1
+        while (k < phone.length) {
+            phone_set.add(phone.slice(0, -k))
+            k++
         }
     }
     
-    return answer;
+    for (const phone of phone_book) {
+        if (phone_set.has(phone)) return false
+    }
+    
+    return true
 }
