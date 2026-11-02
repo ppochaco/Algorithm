@@ -1,19 +1,20 @@
 function solution(progresses, speeds) {
-    var answer = [];
-
-    let today = 0;
-    for (let i = 0, j = 0; i < progresses.length; i ++) {
-        const work_day = Math.ceil((100 - progresses[i]) / speeds[i]);
-        
-        if (today < work_day) {
-            today = work_day;
-            answer[++j] = 1;
-        } else {    
-            answer[j] += 1;
-        }
+    const n = progresses.length
+    const work_day = []
+    for (let i = 0; i < n; i++) {
+        work_day.push(Math.ceil((100 - progresses[i]) / speeds[i]))
     }
     
-    answer = answer.filter(day => day > 0);
+    const answer = []
+    let start = 0
+    for (let end = 1; end < n; end++) {
+        if (work_day[start] < work_day[end]) {
+            answer.push(end - start)
+            start = end
+        }
+    }
+    answer.push(n - start)
     
-    return answer;
+    return answer
+    
 }
