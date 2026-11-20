@@ -2,44 +2,43 @@ import sys
 from collections import deque
 input = sys.stdin.readline
 
-dx = [1, -1, 0, 0]
-dy = [0, 0, 1, -1]
+T = int(input())
 
-t = int(input())
+def bfs(count, sx, sy):
+    queue.append([sx, sy])
+    visited[sx][sy] = count
 
-def bfs(start_x, start_y, earthworm, board, visited):
-    queue = deque([(start_x, start_y)])
-    visited[start_x][start_y] = earthworm
-
-    while queue:
+    while len(queue):
         x, y = queue.popleft()
-        for i in range(4):
-            nx, ny = x + dx[i], y + dy[i]
-            if nx < 0 or nx >= n or ny < 0 or ny >= m:
+        for dx, dy in d:
+            nx, ny = x + dx, y + dy
+            if nx < 0 or ny < 0 or nx >= N or ny >= M:
                 continue
-            if board[nx][ny] == 0:
+            if ground[nx][ny] == 0 or visited[nx][ny]:
                 continue
-            if visited[nx][ny]:
-                continue
-            queue.append((nx, ny))
-            visited[nx][ny] = earthworm
 
-for _ in range(t):
-    m, n, k = map(int, input().split())
-    board = [[0]*m for _ in range(n)]
-    visited = [[0]*m for _ in range(n)]
+            queue.append([nx, ny])
+            visited[nx][ny] = count
 
-    cabbage = []
-    for _ in range(k):
+for _ in range(T):
+    N, M, K = map(int, input().split())
+
+    ground = [[0 for _ in range(M)] for _ in range(N)]
+
+    for i in range(K):
         x, y = map(int, input().split())
-        board[y][x] = 1
-        cabbage.append((y,x))
-    
-    earthworm = 1
-    for i, j in cabbage:
-        if visited[i][j]:
-            continue
-        bfs(i, j, earthworm, board, visited)
-        earthworm += 1
-        
-    print(earthworm-1)
+        ground[x][y] = 1
+
+    d = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    queue = deque([])
+    visited = [[0 for _ in range(M)] for _ in range(N)]
+    count = 0
+
+
+    for i in range(N):
+        for j in range(M):
+            if ground[i][j] and visited[i][j] == 0:
+                count += 1
+                bfs(count, i, j)
+
+    print(count)
